@@ -3,9 +3,110 @@
 # 数据类型和操作
 ## 数据类型
 ### Logical
+长度不等，是倍数就把短的从头重复利用
+```R
+c(1, 3, 5) > 2
+## [1] FALSE  TRUE  TRUE
+(1:4) >= (4:1)
+## [1] FALSE FALSE  TRUE  TRUE
+```
+
+与NA比较产生NA
+```R
+c(1, NA, 3) > 2
+## [1] FALSE    NA  TRUE
+NA == NA
+## [1] NA
+```
+
+检查是否属于利用`%in%`
+```R
+c(1,3) %in% c(2,3,4)
+## [1] FALSE  TRUE
+c(NA,3) %in% c(2,3,4)
+## [1] FALSE  TRUE
+c(1,3) %in% c(NA, 3, 4)
+## [1] FALSE  TRUE
+c(NA,3) %in% c(NA, 3, 4)
+## [1] TRUE TRUE
+```
+
+`match(x, y)`也可以检查是否属于，但返回的是对于`x`的每个元素，找到在`y`中**首次**出现的下标
+```R
+match(c(1, 3), c(2,3,4,3))
+## [1] NA  2
+```
+
+#### 运算符
+- `&&`和`||`是短逻辑,只取操作对象的第一个值运算,具备短路规则,只返回**一个逻辑值或NA**（新版本中好像就不支持对向量使用了
+- `&`和`|`是长逻辑,循环遍历的取操作的对象的每一对值运算,直到每一个元素都参与了运算,其返回值长度等于操作**对象长度的最大值**
+
+#### 逻辑运算函数
+若`cond`是逻辑向量，用a`ll(cond)`测试`cond`的所有元素为真；用a`ny(cond)`测试`cond`至少一个元素为真。`cond`中允许有缺失值，结果可能为缺失值
+```R
+c(1, NA, 3) > 2
+
+## 有NA但是如果有其他仍可以返回F/T
+## [1] FALSE    NA  TRUE
+all(c(1, NA, 3) > 2)
+## [1] FALSE
+any(c(1, NA, 3) > 2)
+
+## [1] TRUE
+all(NA)
+## [1] NA
+any(NA)
+## [1] NA
+```
+
+函数`which()`返回**真值对应的所有下标**
+```R
+which(c(FALSE, TRUE, TRUE, FALSE, NA))
+## [1] 2 3
+which((11:15) > 12)
+## [1] 3 4 5
+```
+
+函数`identical(x,y)`比较两个R对象的**内容**是否完全相同，结果只会取标量TRUE与FALSE两种
+```R
+identical(c(1,2,3), c(1,2,NA))
+## [1] FALSE
+identical(c(1L,2L,3L), c(1,2,3))
+## [1] FALSE
+```
+
+如果不区分数据类型，可以使用`all.equal()`
+```R
+all.equal(c(1,2,3), c(1,2,NA))
+## [1] "'is.NA' value mismatch: 1 in current 0 in target"
+all.equal(c(1L,2L,3L), c(1,2,3))
+## [1] TRUE
+```
+
+函数`duplicated()`返回每个元素是**否为重复值**的结果
+```R
+duplicated(c(1,2,1,3,NA,4,NA))
+## [1] FALSE FALSE  TRUE FALSE FALSE FALSE  TRUE
+```
+
+函数`unique()`可以返回去掉重复值的结果
+```R
+a<-c(1,3,2,1,4,2,1,3,1,23,45,612)
+unique(a) 
+## [1]   1   3   2   4  23  45 612
+```
+
 ### Integer
 ### Numeric
 ### Character
+转义字符`"\(\"\n`
+如果懒得写，可以的情况下使用原始字符串raw string：`r"(...)"`，其中`...`是实际内容
+```R
+r"(adfa())"
+## [1] "adfa()"
+r"--(-)_(adfa())--"
+#* [1] "-)_(adfa()"
+```
 #### nchar()
 统计字符串长度，返回一个整数向量
 ```R
@@ -388,6 +489,7 @@ Levels: low mid high
 5. `NULL`: 表示不存在的数字，注意与`NA`区分，后者是存在单位知。
 
 ## 操作
+不支持自动类型转换
 ### Math operation
 - `+`addition
 - `-`subtraction
@@ -507,6 +609,7 @@ combined_matrix <- rbind(vector1, vector2)  # 返回一个 2x3 的矩阵
    - `warning`函数：生成一个警告消息，但不会停止程序的执行。
 
 # Function
+## 示例
 ```R
 > f<-function(a,b)   #写一个求和函数,function()是固定格式
 + {
@@ -517,6 +620,12 @@ combined_matrix <- rbind(vector1, vector2)  # 返回一个 2x3 的矩阵
 [1] 7
 ```
 有局部变量和全局变量之分，在函数中的局部变量在函数结束后被删除
+
+## 管道
+`|>`将每次调用函数看成对自变量的加工， 加工完以后通过管道传送给下一道工序加工
+```R
+exp(1) |> log()
+```
 
 # I/O
 ## scan()
@@ -532,6 +641,13 @@ res <- readline()
 ## readlines()
 可以一次性读取文件多行，可以设置行数
 `readlines(filePath, n=?)`
+
+## sprintf()
+功能与C类似
+```R
+sprintf('file%03d.txt', c(1, 99, 100))
+## [1] "file001.txt" "file099.txt" "file100.txt"
+```
 
 ## file.show()
 ## read.table()
