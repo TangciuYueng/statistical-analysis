@@ -589,6 +589,35 @@ result <- aggregate(value ~ check_even_odd(value), data = df, FUN = mean)
 # 1                   Even     6
 # 2                    Odd     5
 ```
+
+### stack
+将`data.frame`的每一列堆起来，用列名作为区分
+```R
+# 创建一个数据框
+data <- data.frame(A = c(1, 2, 3),
+                   B = c(4, 5, 6),
+                   C = c(7, 8, 9))
+
+# 使用stack函数转换数据框
+stacked_data <- stack(data, select = c("A", "B", "C"))
+
+# 打印转换后的数据
+print(stacked_data)
+```
+输出结果还是`data.frame`
+```R
+  values ind
+1      1   A
+2      2   A
+3      3   A
+4      4   B
+5      5   B
+6      6   B
+7      7   C
+8      8   C
+9      9   C
+```
+
 ## List
 可以存储不同类型的对象
 

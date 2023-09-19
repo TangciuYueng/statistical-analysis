@@ -432,7 +432,7 @@ Levels: blue red white
 [1] "blue"  "green" "red"  
 ```
 
-此外，`factor`对象还具有属性，比如`labels`和`levels`。`labels`属性是级别的可读标签，而`levels`属性是级别的**内部表示**。您可以使用`levels()`和`labels()`函数来访问和修改这些属性。
+此外，`factor`对象还具有属性，比如`labels`和`levels`。`labels`属性是级别的可读标签，而`levels`属性是级别的**内部表示**，定义了可能的取值以及**顺序**。您可以使用`levels()`和`labels()`函数来访问和修改这些属性。
 
 例如: 
 ```R
