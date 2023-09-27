@@ -628,7 +628,7 @@ plot(1:10, col="green", pch=3, main="Plot 4")
 - 按图层构建图形
 - 绘图命令不能独立使用，必须与画布配合
 
-## 绘图命令
+### 绘图命令
 在 ggplot2 中，`+` 是用来将不同的图层（layers）组合在一起的操作符。这使得您可以在同一个图形中叠加多个几何对象或修改图形的不同方面，从而创建复杂的可视化图表。
 
 例如，您可以先创建一个基本的 ggplot 对象，然后使用 `+` 添加几何对象、调整主题、修改标签等，以逐步完善图形。
@@ -669,7 +669,7 @@ ggplot(data = mpg, aes(x = displ, y = hwy)) + geom_point()
 
 在这个示例中，`aes(x = displ, y = hwy)` 指定了 x 轴用 `displ` 数据，y 轴用 `hwy` 数据。
 
-### geom_XXX(aes, alpha=, position)
+#### geom_XXX(aes, alpha=, position)
 几何绘图
 
 以下是一些常用的 ggplot2 函数和它们的功能以及示例：
@@ -803,7 +803,7 @@ ggplot(data = mpg, aes(x = displ, y = hwy)) + geom_point()
     ```
 
 
-### stat_XXX()
+#### stat_XXX()
 统计绘图
 
 以下是一些 ggplot2 中常用的统计图形函数 (`stat_`) 及其功能的介绍和示例：
@@ -913,5 +913,263 @@ ggplot(data = mpg, aes(x = displ, y = hwy)) + geom_point()
      stat_smooth(method = "lm", se = FALSE, color = "red")
    ```
 
-### scale_XXX()
+#### scale_XXX()
 标度绘图
+
+以下是一些 ggplot2 中常用的颜色和标度（scale）相关函数的解释以及示例：
+
+1. **scale_alpha**：用于调整图形中元素的透明度（alpha通道值）。可以用于创建透明度渐变效果。
+
+   示例：
+   ```R
+   library(ggplot2)
+   
+   data <- data.frame(x = 1:5, y = 1:5, alpha = c(0.1, 0.3, 0.5, 0.7, 0.9))
+   
+   ggplot(data, aes(x = x, y = y, alpha = alpha)) +
+     geom_point() +
+     scale_alpha(range = c(0.1, 1))
+   ```
+
+2. **scale_brewer**：用于应用 ColorBrewer 调色板，ColorBrewer 提供了一系列精心设计的颜色方案。
+
+   示例：
+   ```R
+   library(ggplot2)
+   
+   data <- data.frame(x = 1:5, y = 1:5, group = factor(c("A", "B", "C", "D", "E")))
+   
+   ggplot(data, aes(x = x, y = y, fill = group)) +
+     geom_bar(stat = "identity") +
+     scale_fill_brewer(palette = "Set1")
+   ```
+
+3. **scale_continuous**：用于调整连续变量的标度。
+
+   示例：
+   ```R
+   library(ggplot2)
+   
+   data <- data.frame(x = 1:5, y = c(2, 4, 1, 6, 3))
+   
+   ggplot(data, aes(x = x, y = y)) +
+     geom_point() +
+     scale_x_continuous(limits = c(0, 6), breaks = seq(0, 6, by = 2))
+   ```
+
+4. **scale_date**：用于调整日期变量的标度。
+
+   示例：
+   ```R
+   library(ggplot2)
+   library(lubridate)
+   
+   data <- data.frame(date = seq(from = ymd("2023-01-01"), by = "months", length.out = 12),
+                      value = c(10, 15, 12, 18, 20, 25, 22, 28, 30, 35, 32, 38))
+   
+   ggplot(data, aes(x = date, y = value)) +
+     geom_line() +
+     scale_x_date(date_labels = "%b %Y", date_breaks = "2 months")
+   ```
+
+5. **scale_datetime**：用于调整日期和时间变量的标度。
+
+   示例：
+   ```R
+   library(ggplot2)
+   library(lubridate)
+   
+   data <- data.frame(datetime = seq(from = ymd_hms("2023-01-01 00:00:00"), by = "hours", length.out = 24),
+                      value = runif(24))
+   
+   ggplot(data, aes(x = datetime, y = value)) +
+     geom_point() +
+     scale_x_datetime(labels = date_format("%H:%M"), breaks = date_breaks("2 hours"))
+   ```
+
+6. **scale_discrete**：用于调整离散变量的标度。
+
+   示例：
+   ```R
+   library(ggplot2)
+   
+   data <- data.frame(category = factor(c("A", "B", "C", "D")), count = c(15, 8, 12, 20))
+   
+   ggplot(data, aes(x = category, y = count)) +
+     geom_bar(stat = "identity") +
+     scale_x_discrete(labels = c("Category A", "Category B", "Category C", "Category D"))
+   ```
+
+7. **scale_gradient**、**scale_gradient2**、**scale_gradientn**：用于创建渐变色标度，分别表示两种颜色、三种颜色和多种颜色的渐变效果。
+
+   示例：
+   ```R
+   library(ggplot2)
+   
+   data <- data.frame(x = 1:10, y = 1:10, z = 1:10)
+   
+   ggplot(data, aes(x = x, y = y, fill = z)) +
+     geom_tile() +
+     scale_fill_gradient(low = "blue", high = "red")
+   ```
+  
+
+8. **scale_grey**：用于调整颜色标度为灰度（灰度颜色），通常用于创建黑白或灰度图。
+
+   示例：
+   ```R
+   library(ggplot2)
+   
+   ```
+
+9. **scale_hue**：用于调整颜色标度为均匀色调，通常用于在分类数据中创建不同的颜色。
+
+   示例：
+   ```R
+   library(ggplot2)
+   
+   data <- data.frame(category = factor(c("A", "B", "C", "D")), value = c(10, 20, 30, 40))
+   
+   ggplot(data, aes(x = category, y = value, fill = category)) +
+     geom_bar(stat = "identity") +
+     scale_fill_hue()
+   ```
+
+10. **scale_identity**：用于直接使用指定的取值，不进行标度转换，适用于您已经明确知道要使用的数据值的情况。
+
+   示例：
+   ```R
+   library(ggplot2)
+   
+   data <- data.frame(x = 1:5, y = c(2, 4, 1, 6, 3), group = c("A", "B", "C", "D", "E"))
+   
+   ggplot(data, aes(x = x, y = y, color = group)) +
+     geom_line() +
+     scale_color_identity()
+   ```
+
+11. **scale_linetype**：用于根据指定的线条模式来展示不同的数据。
+
+   示例：
+   ```R
+   library(ggplot2)
+   
+   data <- data.frame(x = 1:5, y = c(2, 4, 1, 6, 3), group = c("A", "B", "C", "D", "E"))
+   
+   ggplot(data, aes(x = x, y = y, linetype = group)) +
+     geom_line() +
+     scale_linetype_manual(values = c("solid", "dashed", "dotted", "dotdash", "longdash"))
+   ```
+
+12. **scale_manual**：用于手动指定离散标度，可以自定义每个类别的颜色、形状、大小等属性。
+
+   示例：
+   ```R
+   library(ggplot2)
+   
+   data <- data.frame(category = factor(c("A", "B", "C", "D")), value = c(10, 20, 30, 40))
+   
+   ggplot(data, aes(x = category, y = value, color = category)) +
+     geom_point(size = 4) +
+     scale_color_manual(values = c("A" = "red", "B" = "blue", "C" = "green", "D" = "purple"))
+   ```
+
+13. **scale_shape**：用于根据不同的数值创建不同的形状。
+
+   示例：
+   ```R
+   library(ggplot2)
+   
+   data <- data.frame(x = 1:5, y = 1:5, category = c("A", "B", "C", "D", "E"))
+   
+   ggplot(data, aes(x = x, y = y, shape = category)) +
+     geom_point(size = 4) +
+     scale_shape_manual(values = c("A" = 1, "B" = 2, "C" = 3, "D" = 4, "E" = 5))
+   ```
+
+14. **scale_size**：用于根据不同的数值创建不同的点大小。
+
+   示例：
+   ```R
+   library(ggplot2)
+   
+   data <- data.frame(x = 1:5, y = 1:5, size = c(1, 2, 3, 4, 5))
+   
+   ggplot(data, aes(x = x, y = y, size = size)) +
+     geom_point() +
+     scale_size(range = c(2, 8))
+   ```
+
+
+
+### 其他函数
+#### facet_wrap分页
+`facet_wrap` 是 ggplot2 中用于创建分面图的函数，它允许您将数据分成多个子图，并根据一个或多个因子变量的水平来组织这些子图。以下是一些 `facet_wrap` 的常用参数以及示例：
+
+**参数介绍**：
+
+- `~`（波浪线）：用于指定分面的变量，可以是一个或多个因子变量的组合。变量名称之间用 `+` 连接，例如 `~var1 + var2`。
+
+- `ncol`：指定子图列的数量，控制每行有多少个子图。
+
+- `nrow`：指定子图行的数量，控制每列有多少个子图。
+
+- `scales`：控制坐标轴的刻度是否共享。默认情况下，横轴和纵轴的刻度是独立的。可以设置为 `"fixed"` 表示共享刻度，或者设置为 `"free"` 表示独立刻度。
+
+- `shrink`：控制每个子图的缩小比例，可以是一个数值或长度单位。较小的值将使子图更紧凑，较大的值将使子图更宽松。
+
+- `labeller`：一个函数，用于自定义子图的标签。可以根据需要更改子图的标签。
+
+- `strip.position`：用于指定子图标题的位置，可以是 `"top"`（默认）、`"bottom"`、`"left"` 或 `"right"`。
+
+- `strip.text.x` 和 `strip.text.y`：用于旋转子图标题的文本。
+
+**示例**：
+
+以下是一些使用 `facet_wrap` 的示例：
+
+1. **单变量分面**：
+
+   ```R
+   library(ggplot2)
+   
+   data <- data.frame(x = 1:20, y = rnorm(20), group = factor(rep(1:4, each = 5)))
+   
+   ggplot(data, aes(x = x, y = y)) +
+     geom_point() +
+     facet_wrap(~ group, ncol = 2)
+   ```
+
+   这个示例将数据按照 `group` 变量的水平分成四个子图，每行有两个子图。
+
+2. **多变量分面**：
+
+   ```R
+   library(ggplot2)
+   
+   data <- data.frame(x = 1:20, y = rnorm(20), group1 = factor(rep(1:2, each = 10)), group2 = factor(rep(1:2, times = 10)))
+   
+   ggplot(data, aes(x = x, y = y)) +
+     geom_point() +
+     facet_wrap(~ group1 + group2, ncol = 2)
+   ```
+
+   这个示例将数据按照两个因子变量 `group1` 和 `group2` 的组合分成四个子图，每行有两个子图。
+
+3. **自定义标签**：
+
+   ```R
+   library(ggplot2)
+   
+   data <- data.frame(x = 1:20, y = rnorm(20), group = factor(rep(1:4, each = 5)))
+   
+   ggplot(data, aes(x = x, y = y)) +
+     geom_point() +
+     facet_wrap(~ group, ncol = 2, labeller = as_labeller(c("Group 1", "Group 2", "Group 3", "Group 4")))
+   ```
+
+#### labs(x=,y=)
+
+#### guides()
+
+#### theme_grey()
