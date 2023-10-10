@@ -1169,7 +1169,79 @@ ggplot(data = mpg, aes(x = displ, y = hwy)) + geom_point()
    ```
 
 #### labs(x=,y=)
+在 R 语言中，`labs()` 函数用于设置图表的轴标签。它可以用来自定义 x 轴和 y 轴的标签文本。
+
+```R
+library(ggplot2)
+
+# 创建一个示例数据集
+df <- data.frame(
+  x = c(1, 2, 3, 4, 5),
+  y = c(1, 4, 9, 16, 25)
+)
+
+# 使用 ggplot() 创建绘图环境，并设置 x 和 y 的映射关系
+p <- ggplot(df, aes(x, y))
+
+# 添加一个散点图层
+p <- p + geom_point()
+
+# 使用 labs() 函数设置图形的标签
+p <- p + labs(
+  title = "Scatter Plot Example",  # 设置标题
+  x = "X-axis",                    # 设置 X 轴标签
+  y = "Y-axis"                     # 设置 Y 轴标签
+)
+
+# 显示图形
+print(p)
+```
 
 #### guides()
+在 R 语言中，`guides()` 函数用于自定义绘图时的**图例和轴刻度**的显示方式。它允许你对图例的标题、标签、位置、样式等进行进一步的设置。
+```R
+library(ggplot2)
 
+# 创建一个示例数据集
+df <- data.frame(
+  x = c(1, 2, 3, 4, 5),
+  y = c(1, 4, 9, 16, 25),
+  type = c("A", "B", "A", "B", "A")
+)
+
+# 使用 ggplot() 创建绘图环境，并设置 x 和 y 的映射关系和颜色映射
+p <- ggplot(df, aes(x, y, color = type))
+
+# 添加一个散点图层
+p <- p + geom_point()
+
+# 使用 guides() 函数设置图例的显示方式
+p <- p + guides(
+  color = guide_legend(title = "Type",     # 设置图例标题
+                       override.aes = list(shape = c(16, 17))),   # 设置图例项的符号形状
+  size = guide_legend(title = "Size",       # 设置图例标题
+                      override.aes = list(shape = c(18, 19))),    # 设置图例项的符号形状
+  alpha = guide_legend(title = "Transparency",                # 设置图例标题
+                       override.aes = list(shape = c(20, 21)))  # 设置图例项的符号形状
+)
+
+# 显示图形
+print(p)
+```
+
+需要注意的是，`guides()` 函数通常用于与绘图函数（例如 `ggplot2` 包中的函数）一起使用，以控制图例和轴刻度的显示方式。具体使用方式可能因绘图函数和美学属性的不同而有所变化。
 #### theme_grey()
+
+#### pairs()
+```R
+# 创建一个数据框
+mydata <- data.frame(
+  x = rnorm(100),   # 正态分布的随机数
+  y = rnorm(100),
+  z = rnorm(100),
+  w = rnorm(100)
+)
+
+# 使用 pairs() 创建散点图矩阵
+pairs(mydata)
+```
