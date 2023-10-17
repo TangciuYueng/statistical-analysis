@@ -67,7 +67,7 @@ print(is_missing)
 ```
 [1] FALSE  TRUE FALSE  TRUE FALSE
 ```
-2. 判断x是否完整的函数是`complete.cases(x)`。
+2. 判断x是否完整的函数是**`complete.cases(x)`。对行判断，以行为单位**
 ```R
 # 创建一个包含缺失值的向量
 x <- c(10, 20, NA, 30, NA)
@@ -227,7 +227,13 @@ Levels: A B
 为了避免异常值造成的损失，需要在数据预处理阶段进行异常值检测。另外，某些情况下，异常值检测也可能是研究的目的，如数据造假的发现、电脑入侵检测等。
 
 1. 箱线图：
+- `coef=1.5`：这是一个可选参数，用于定义异常值的阈值。在计算异常值时，将使用箱线图中的 IQR（四分位数间距）乘以该系数，默认值为 1.5。
 
+- `do.conf=TRUE`：这是一个可选参数，用于指示是否计算箱线图的置信区间。设置为 `TRUE` 表示要计算置信区间。
+
+- `do.out=TRUE`：这是一个可选参数，用于指示是否将异常值包含在返回结果中。设置为 `TRUE` 表示要获取异常值。
+
+最后，通过 `y$stats` 和 `y$out` 可以访问箱线图统计信息的结果。`y$stats` 是一个包含五个值的向量，分别表示箱线图的下限（minimum）、下四分位数（lower hinge）、中位数（median）、上四分位数（upper hinge）、上限（maximum）；`y$out` 则是一个向量，包含异常值的数值。
 ```R
 # 创建示例数据
 data <- c(10, 15, 20, 25, 30, 35, 40, 300)
@@ -301,9 +307,336 @@ points(iris[out, c(1, 2)], col = "red", pch = "x", cex = 2)
 最后，使用`plot()`函数绘制原始数据的散点图，并使用`points()`函数将离群点（在数据集iris中对应索引的行）以红色叉形标记出来。
 
 ## Data deduplication
+当处理数据时，你可能需要了解数据中唯一值和重复值的情况。在R中，你可以使用`unique()`和`duplicated()`函数来完成这些任务。
+
+1. `unique()`: 
+
+```
+unique(x)
+```
+
+`unique()`函数用于返回向量或数据框中的唯一值。它接受一个参数 `x`，表示待处理的向量或数据框。函数将返回一个包含 `x` 中唯一值的新向量或数据框。**直接去重**
+
+示例用法：
+```R
+x <- c(1, 2, 3, 2, 4, 1, 3)
+unique_values <- unique(x)
+print(unique_values)
+```
+输出：
+```
+[1] 1 2 3 4
+```
+
+在上面的示例中，我们有一个包含重复值的向量 `x`。使用`unique()`函数，我们得到了去重后的唯一值向量 `unique_values`。
+
+2. `duplicated()`:
+
+```
+duplicated(x)
+```
+
+`duplicated()`函数用于判断向量或数据框中的每个元素是否为重复值。它接受一个参数 `x`，表示待处理的向量或数据框。函数返回一个逻辑向量，其长度与 `x` 相同，指示每个元素是否为重复值。
+
+示例用法：
+```R
+x <- c(1, 2, 3, 2, 4, 1, 3)
+is_duplicated <- duplicated(x)
+print(is_duplicated)
+```
+输出：
+```
+[1] FALSE FALSE FALSE  TRUE FALSE  TRUE  TRUE
+```
+
+注意这里第一个2是FALSE，第二个2才是TRUE
+
+在上面的示例中，我们有一个包含重复值的向量 `x`。使用`duplicated()`函数，我们得到了一个逻辑向量 `is_duplicated`，其中 `TRUE` 表示对应位置的元素为重复值，`FALSE` 表示对应位置的元素为唯一值。
+
 ## Data normalization
+[见RMD](../PPT/数据预处理.Rmd)
 ## sampling
+当你需要从一个数据集中随机抽取样本时，可以使用R中的`sample()`函数。`sample()`函数可以从给定的向量中随机选择指定数量的元素。
+
+`sample()`函数的基本语法如下：
+```R
+sample(x, size, replace = FALSE, prob = NULL)
+```
+
+其中，
+- `x`: 表示待抽样的向量。
+- `size`: 表示要抽取的样本的大小。
+- `replace`: 一个逻辑值，表示是否进行有放回的抽样。如果为`TRUE`，则抽样时允许重复选择同一个元素；如果为`FALSE`，则抽样时不允许重复选择同一个元素。
+- `prob`: 一个可选的表示每个元素被选择的概率的向量。默认为`NULL`，表示所有元素的选择概率相等。
+
+下面是几个`sample()`函数的示例用法：
+
+1. 从向量中随机选择一个元素：
+```R
+x <- c("A", "B", "C", "D", "E")
+random_element <- sample(x, size = 1)
+print(random_element)
+```
+输出：
+```
+[1] "C"
+```
+
+2. 从向量中随机选择多个元素：
+```R
+x <- c("A", "B", "C", "D", "E")
+random_elements <- sample(x, size = 3)
+print(random_elements)
+```
+输出：
+```
+[1] "E" "B" "A"
+```
+
+3. 从向量中进行有放回的随机抽样（允许重复选择同一个元素）：
+```R
+x <- c("A", "B", "C", "D", "E")
+random_elements <- sample(x, size = 5, replace = TRUE)
+print(random_elements)
+```
+输出：
+```
+[1] "B" "A" "D" "E" "E"
+```
+
+4. 根据给定的概率进行随机选择：
+```R
+x <- c("A", "B", "C", "D", "E")
+probabilities <- c(0.1, 0.2, 0.3, 0.2, 0.2)
+random_elements <- sample(x, size = 3, prob = probabilities)
+print(random_elements)
+```
+输出：
+```
+[1] "E" "D" "A"
+```
+
 ## sorting
+[见RMD](../PPT/数据预处理.Rmd)
 ## vectorization
+当你想要将一个对象转换为向量时，可以使用R中的`as.vector()`函数。`as.vector()`函数可以将各种类型的对象（如列表、因子、数组等）转换为一维的向量。
+
+`as.vector()`函数的基本语法如下：
+```R
+as.vector(x, mode = "any")
+```
+
+其中，
+- `x`：表示要转换的对象。
+- `mode`：表示要转换为的向量的类型。默认值为"any"，表示根据对象的属性和类型的不同，可能返回不同的向量类型。可以使用诸如"logical"、"numeric"、"character"等参数来指定返回的向量类型。
+
+下面是几个`as.vector()`函数的示例用法：
+
+1. 将列表转换为向量：
+```R
+list_obj <- list(1, 2, 3)
+vector_obj <- as.vector(list_obj)
+print(vector_obj)
+```
+输出：
+```
+[1] 1 2 3
+```
+
+2. 将因子对象转换为向量：
+```R
+factor_obj <- factor(c("A", "B", "C"))
+vector_obj <- as.vector(factor_obj)
+print(vector_obj)
+```
+输出：
+```
+[1] 1 2 3
+Levels: A B C
+```
+注意，因子被转换为了整数向量，并在输出中显示了原始因子的级别。
+
+3. 将矩阵或数组对象转换为向量：
+```R
+matrix_obj <- matrix(1:9, nrow = 3)
+vector_obj <- as.vector(matrix_obj)
+print(vector_obj)
+```
+输出：
+```
+[1] 1 2 3 4 5 6 7 8 9
+```
+矩阵或数组对象按照列的顺序转换为了一维向量。
+
+-------------------------------------------------------------------------
+
+另外，还有一个用于将列表及其嵌套的子列表（如果存在）转换为简单向量的函数是`unlist()`。`unlist()`的作用是将嵌套结构展开，并返回一个扁平化的向量。
+
+`unlist()`函数的基本语法如下：
+```R
+unlist(x, recursive = TRUE, use.names = TRUE)
+```
+其中，
+- `x`：表示要展开的对象，通常为列表或嵌套列表。
+- `recursive`：一个逻辑值，表示是否递归展开嵌套结构。默认为`TRUE`，表示递归展开所有子列表；如果设置为`FALSE`，则只展开最外层的列表。
+- `use.names`：一个逻辑值，表示是否保留原始列表中的元素名称作为输出向量的元素名称。默认为`TRUE`，表示保留元素名称；如果设置为`FALSE`，则输出向量的元素名称为自动生成的数字。
+
+下面是一个`unlist()`函数的示例用法：
+
+```R
+nested_list <- list(a = 1, b = list(2, 3), c = list(list(4, 5), 6))
+flattened_vector <- unlist(nested_list)
+print(flattened_vector)
+```
+输出：
+```R
+ a   b1   b2 c1 c2   c3 
+ 1    2    3   4   5   6 
+```
+展开的向量中的元素名称保留了原始列表中的层次结构。
+
+`unlist()`函数特别适用于处理具有嵌套结构的数据，例如嵌套的列表或数据框。
+
 ## Cross-tabulation
+列联表`table()`用于统计和分析两个或多个变量之间关系的二维表格
+### 基本使用
+```R
+# 创建一个包含两个变量的数据框
+data <- data.frame(Gender = c("Male", "Female", "Male", "Male", "Female"),
+                   AgeGroup = c("18-24", "25-34", "35-44", "25-34", "18-24"))
+
+# 创建列联表
+table_result <- table(data$Gender, data$AgeGroup)
+print(table_result)
+```
+输出
+```
+        18-24 25-34 35-44
+  Female     1     0     1
+  Male       1     2     0
+```
+说明男的对应在18-24的有1个，25-34的有2个等等
+
+### 也可以对一个变量分析
+
+```R
+  (mytable=with(Arthritis,table(Improved)))
+  prop.table(mytable)
+```
+这段代码利用了R中的`with()`函数和`table()`函数来创建和分析一个叫做`Arthritis`的数据集中的变量`Improved`的列联表。
+
+首先，在**`with()`函数中指定了数据集**`Arthritis`。这意味着在接下来的代码中，我们可以直接引用`Arthritis`数据集中的变量，而**不需要每次都使用`Arthritis$`的前缀**。
+
+然后，我们使用`table()`函数创建了一个名为`mytable`的列联表。`Improved`是`Arthritis`数据集中的一个变量，它记录了患者在接受治疗后的改善情况。`table(Improved)`将统计不同改善情况的频数，并创建一个包含这些频数的列联表。
+
+接着，我们使用`prop.table()`函数对列联表进行了处理。`prop.table(mytable)`会计算出**每个单元格的相对比例**。这样做可以将频数转换为相对频率，以便更好地理解不同改善情况在整体中的比例。
+
+请注意，`prop.table()`函数在不指定额外参数的情况下，**默认计算相对频率，即将频数除以总和**。如果你想计算其他类型的相对比例，可以通过`margin`参数指定边际和。
+
+### 指定边际和
+```
+(mytable=xtabs(~Treatment+Improved,data=Arthritis))
+margin.table(mytable,1)
+margin.table(mytable,2)
+```
+这段代码使用了R中的`xtabs()`函数来创建一个交叉表（透视表），并使用`margin.table()`函数计算行和列的边际和。
+
+首先，`xtabs()`函数的语法是`xtabs(formula, data)`，其中`formula`是一个公式，用于指定要交叉的变量，`data`是指定的数据集。在这里，公式`~Treatment+Improved`表示我们想要以`Treatment`和`Improved`两个变量为基础创建交叉表。`Arthritis`则是指定的数据集。
+
+然后，我们使用`margin.table()`函数计算了交叉表的行边际和和列边际和。`margin.table()`函数的语法是`margin.table(x, margin)`，其中`x`是交叉表对象，`margin`是指定计算边际和的维度。在这里，`margin.table(mytable, 1)`表示计算行边际和，而`margin.table(mytable, 2)`表示计算列边际和。
+
+输出
+```
+         Improved
+Treatment None Some Marked
+  Placebo   29    7      7
+  Treated   13    7     21
+Treatment
+Placebo Treated 
+     43      41 
+Improved
+  None   Some Marked 
+    42     14     28 
+```
+
+### 边际和的占比
+```R
+  (mytable=xtabs(~Treatment+Improved,data=Arthritis))
+  prop.table(mytable,1)
+  prop.table(mytable,2)
+  prop.table(mytable)
+```
+这段代码使用了R中的`xtabs()`函数来创建一个交叉表（透视表），并使用`prop.table()`函数计算了交叉表的比例。
+
+首先，代码`mytable=xtabs(~Treatment+Improved,data=Arthritis)`使用`xtabs()`函数创建了一个交叉表，交叉表的行对应于`Treatment`变量的不同取值，列对应于`Improved`变量的不同取值。该交叉表存储在变量`mytable`中，以便后续使用。
+
+接下来，我们使用`prop.table()`函数计算了交叉表的比例。`prop.table()`函数的语法是`prop.table(x, margin)`，其中`x`是交叉表对象，`margin`是指定计算比例的维度。
+
+- `prop.table(mytable, 1)`表示计算行比例，即每个单元元素相对于**所在行总和的比例**。
+- `prop.table(mytable, 2)`表示计算列比例，即每个单元元素相对于**所在列总和的比例**。
+- `prop.table(mytable)`表示计算整个交叉表的比例，即每个单元元素相对于整个表的总和的比例。
+
+输出
+```
+         Improved
+Treatment None Some Marked
+  Placebo   29    7      7
+  Treated   13    7     21
+         Improved
+Treatment      None      Some    Marked
+  Placebo 0.6744186 0.1627907 0.1627907
+  Treated 0.3170732 0.1707317 0.5121951
+         Improved
+Treatment      None      Some    Marked
+  Placebo 0.6904762 0.5000000 0.2500000
+  Treated 0.3095238 0.5000000 0.7500000
+         Improved
+Treatment       None       Some     Marked
+  Placebo 0.34523810 0.08333333 0.08333333
+  Treated 0.15476190 0.08333333 0.25000000
+```
+
+### 增加总和的行/列
+
+`addmargins()`
+[见RMD](../PPT/数据预处理.Rmd)
+
 ## Grouping and summarizing
+`aggregate(x, by, FUN, ...)`
+
+### 根据多个条件聚合
+```R
+aggregate(state.x77,
+        list(Region = state.region,
+             Cold = state.x77[,"Frost"] > 130),
+        mean)
+```
+根据state.region和是否Cold
+state.region有Northeast、South、North Central和West
+Cold有T和F
+因此一共有8行，这里去掉了表头
+```
+Northeast	FALSE	8802.8000	4780.400	
+South	FALSE	4208.1250	4011.938	
+North Central	FALSE	7233.8333	4633.333	
+West	FALSE	4582.5714	4550.143	
+Northeast	TRUE	1360.5000	4307.500	
+North Central	TRUE	2372.1667	4588.833	
+West	TRUE	970.1667	4880.500	
+```
+**利用`aggregate(formula, data, FUN, ...)`**也可以
+```R
+# 创建一个数据集
+data <- data.frame(
+  name = c("Alice", "Bob", "Charlie", "David", "Emma"),
+  age = c(20, 22, 21, 21, 20),
+  gender = c("F", "M", "M", "F", "F"),
+  score = c(85, 90, 95, 80, 75)
+)
+
+# 对年龄和性别进行分类，并计算平均分数
+result <- aggregate(score ~ age + gender, data, mean)
+
+# 输出结果
+print(result)
+```
