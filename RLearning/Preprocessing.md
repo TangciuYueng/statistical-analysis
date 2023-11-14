@@ -68,7 +68,7 @@ print(is_missing)
 ```
 [1] FALSE  TRUE FALSE  TRUE FALSE
 ```
-2. 判断x是否完整的函数是**`complete.cases(x)`。对行判断，以行为单位**
+2. 判断x是否完整的函数是`complete.cases(x)`。**对行判断，以行为单位**
 ```R
 # 创建一个包含缺失值的向量
 x <- c(10, 20, NA, 30, NA)
@@ -526,7 +526,7 @@ print(table_result)
 ```
 这段代码利用了R中的`with()`函数和`table()`函数来创建和分析一个叫做`Arthritis`的数据集中的变量`Improved`的列联表。
 
-首先，在**`with()`函数中指定了数据集**`Arthritis`。这意味着在接下来的代码中，我们可以直接引用`Arthritis`数据集中的变量，而**不需要每次都使用`Arthritis$`的前缀**。
+首先，在`with()`函数中指定了数据集`Arthritis`。这意味着在接下来的代码中，我们可以直接引用`Arthritis`数据集中的变量，而**不需要每次都使用`Arthritis$`的前缀**。
 
 然后，我们使用`table()`函数创建了一个名为`mytable`的列联表。`Improved`是`Arthritis`数据集中的一个变量，它记录了患者在接受治疗后的改善情况。`table(Improved)`将统计不同改善情况的频数，并创建一个包含这些频数的列联表。
 
