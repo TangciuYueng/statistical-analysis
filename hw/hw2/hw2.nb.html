@@ -12,7 +12,7 @@
 <meta name="author" content="YangTengchao" />
 
 
-<title>hw1</title>
+<title>hw２</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -1747,7 +1747,7 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">hw1</h1>
+<h1 class="title toc-ignore">hw２</h1>
 <h4 class="author">YangTengchao</h4>
 
 </div>
@@ -1756,100 +1756,75 @@ display: none;
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyDlvJXlhaXmlbDmja5cbmxvYWQoXCJwaXJhdGVzLlJEYXRhXCIpXG5gYGAifQ== -->
-<pre class="r"><code># 引入数据
-load(&quot;pirates.RData&quot;)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyDlr7zlhaXmlbDmja5cbm11c2ljIDwtIHJlYWQuY3N2KFwibXVzaWMuY3N2XCIpXG5gYGAifQ== -->
+<pre class="r"><code># 导入数据
+music &lt;- read.csv(&quot;music.csv&quot;)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyDpl67popjosIPmn6VcbiMgQm9keSBwaWVyY2luZyBkYXRhXG5hbWVyaWNhbi5icCA8LSBjKDMsIDUsIDIsIDEsIDQsIDQsIDYsIDMsIDUsIDQpXG5ldXJvcGVhbi5icCA8LSBjKDYsIDUsIDcsIDcsIDYsIDMsIDQsIDYsIDUsIDQpXG4jIFN0b3JlIGRhdGEgaW4gYSBkYXRhZnJhbVxuZWJwLnN1cnZleSA8LSBkYXRhLmZyYW1lKFwiYnBcIiA9IGMoYW1lcmljYW4uYnAsIGV1cm9wZWFuLmJwKSxcblwiZ3JvdXBcIiA9IHJlcChjKFwiQW1lcmljYW5cIixcIkV1cm9wZWFuXCIpLCBlYWNoID0gMTApLHN0cmluZ3NBc0ZhY3RvcnMgPSBGQUxTRSlcbmBgYCJ9 -->
-<pre class="r"><code># 问题调查
-# Body piercing data
-american.bp &lt;- c(3, 5, 2, 1, 4, 4, 6, 3, 5, 4)
-european.bp &lt;- c(6, 5, 7, 7, 6, 3, 4, 6, 5, 4)
-# Store data in a datafram
-ebp.survey &lt;- data.frame(&quot;bp&quot; = c(american.bp, european.bp),
-&quot;group&quot; = rep(c(&quot;American&quot;,&quot;European&quot;), each = 10),stringsAsFactors = FALSE)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyDmn6XnnIvln7rmnKzkv6Hmga9cbnN0cihtdXNpYylcbmBgYCJ9 -->
+<pre class="r"><code># 查看基本信息
+str(music)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyDnrrHnur/lm77liKTmlq1cbmJveHBsb3QoYnAgfiBncm91cCwgZGF0YSA9IGVicC5zdXJ2ZXksIFxuICAgICAgICBtYWluID0gXCLmtbfnm5fouqvkvZPnqb/lrZTmlbDnm67nrrHnur/lm75cIixcbiAgICAgICAgeGxhYiA9IFwi5Zyw5Yy6XCIsIHlsYWIgPSBcIuepv+WtlOaVsOebrlwiKVxuYGBgIn0= -->
-<pre class="r"><code># 箱线图判断
-boxplot(bp ~ group, data = ebp.survey, 
-        main = &quot;海盗身体穿孔数目箱线图&quot;,
-        xlab = &quot;地区&quot;, ylab = &quot;穿孔数目&quot;)</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiJ2RhdGEuZnJhbWUnOlx0MTUwIG9icy4gb2YgIDMgdmFyaWFibGVzOlxuICQgSUQgICAgICAgICAgOiBpbnQgIDEgMiAzIDQgNSA2IDcgOCA5IDEwIC4uLlxuICQgY29uZGl0aW9uICAgOiBjaHIgIFwibm9fbXVzaWNcIiBcIm5vX211c2ljXCIgXCJub19tdXNpY1wiIFwibm9fbXVzaWNcIiAuLi5cbiAkIHByb2R1Y3Rpdml0eTogbnVtICAxODggMTk2IDE5NCAxOTAgMTU3IC4uLlxuIn0= -->
+<pre><code>&#39;data.frame&#39;:   150 obs. of  3 variables:
+ $ ID          : int  1 2 3 4 5 6 7 8 9 10 ...
+ $ condition   : chr  &quot;no_music&quot; &quot;no_music&quot; &quot;no_music&quot; &quot;no_music&quot; ...
+ $ productivity: num  188 196 194 190 157 ...</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc3VtbWFyeShtdXNpYylcbmBgYCJ9 -->
+<pre class="r"><code>summary(music)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-plot-begin eyJoZWlnaHQiOjQzMi42MzI5LCJ3aWR0aCI6NzAwLCJzaXplX2JlaGF2aW9yIjowLCJjb25kaXRpb25zIjpbXX0= -->
-<p><img src="data:image/png;base64,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" /></p>
-<!-- rnb-plot-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyDlr7nkuo7kuK3kvY3mlbDvvIzmrKfmtLLlnLDljLrnmoTnqb/lrZTmlbDnm67mr5Tnvo7lm73pq5jvvJvlkIzml7bor7TmmI7mrKfmtLLlnLDljLrnqb/lrZTmlbDnm67lpJrnmoTkurrovoPlpJpcbiMg5a+55LqO5LiK5LiL5Zub5YiG5L2N5pWw77yM5Y+v5Lul55yL5Ye65qyn5rSy5Zyw5Yy656m/5a2U5pWw55uu5Li76KaB6ZuG5Lit5Zyo5Lit6Ze05pWw55uu55qE5rC05bmz77yb576O5Zu95Zyw5Yy65pWw55uu6ZuG5Lit5Zyo5Lit6Ze05YGP5aSn5rC05bmzXG4jIOS9huS7jueuseeahOmVv+W6puWPr+S7peeci+WHuuWFtuemu+aVo+eoi+W6puebuOW3ruS4jeWkp1xuYGBgIn0= -->
-<pre class="r"><code># 对于中位数，欧洲地区的穿孔数目比美国高；同时说明欧洲地区穿孔数目多的人较多
-# 对于上下四分位数，可以看出欧洲地区穿孔数目主要集中在中间数目的水平；美国地区数目集中在中间偏大水平
-# 但从箱的长度可以看出其离散程度相差不大</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyB0LnRlc3TliKTmlq3nvo7lm73lkozmrKfmtLLnqb/lrZTmlbDnm67lt67lvIJcbnAudGVzdCA9IHQudGVzdChicCB+IGdyb3VwLCBkYXRhID0gZWJwLnN1cnZleSlcbnAudGVzdFxuYGBgIn0= -->
-<pre class="r"><code># t.test判断美国和欧洲穿孔数目差异
-p.test = t.test(bp ~ group, data = ebp.survey)
-p.test</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiXG5cdFdlbGNoIFR3byBTYW1wbGUgdC10ZXN0XG5cbmRhdGE6ICBicCBieSBncm91cFxudCA9IC0yLjUyMjgsIGRmID0gMTcuNzgzLFxucC12YWx1ZSA9IDAuMDIxNFxuYWx0ZXJuYXRpdmUgaHlwb3RoZXNpczogdHJ1ZSBkaWZmZXJlbmNlIGluIG1lYW5zIGJldHdlZW4gZ3JvdXAgQW1lcmljYW4gYW5kIGdyb3VwIEV1cm9wZWFuIGlzIG5vdCBlcXVhbCB0byAwXG45NSBwZXJjZW50IGNvbmZpZGVuY2UgaW50ZXJ2YWw6XG4gLTIuOTMzNTkyNyAtMC4yNjY0MDczXG5zYW1wbGUgZXN0aW1hdGVzOlxubWVhbiBpbiBncm91cCBBbWVyaWNhbiBcbiAgICAgICAgICAgICAgICAgICAzLjcgXG5tZWFuIGluIGdyb3VwIEV1cm9wZWFuIFxuICAgICAgICAgICAgICAgICAgIDUuMyBcbiJ9 -->
-<pre><code>
-    Welch Two Sample t-test
-
-data:  bp by group
-t = -2.5228, df = 17.783,
-p-value = 0.0214
-alternative hypothesis: true difference in means between group American and group European is not equal to 0
-95 percent confidence interval:
- -2.9335927 -0.2664073
-sample estimates:
-mean in group American 
-                   3.7 
-mean in group European 
-                   5.3 </code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiICAgICAgIElEICAgICAgICAgIGNvbmRpdGlvbiAgICAgICAgICBwcm9kdWN0aXZpdHkgIFxuIE1pbi4gICA6ICAxLjAwICAgTGVuZ3RoOjE1MCAgICAgICAgIE1pbi4gICA6MTA0LjcgIFxuIDFzdCBRdS46IDM4LjI1ICAgQ2xhc3MgOmNoYXJhY3RlciAgIDFzdCBRdS46MTYxLjAgIFxuIE1lZGlhbiA6IDc1LjUwICAgTW9kZSAgOmNoYXJhY3RlciAgIE1lZGlhbiA6MTg1LjAgIFxuIE1lYW4gICA6IDc1LjUwICAgICAgICAgICAgICAgICAgICAgIE1lYW4gICA6MTg0LjkgIFxuIDNyZCBRdS46MTEyLjc1ICAgICAgICAgICAgICAgICAgICAgIDNyZCBRdS46MjA1LjAgIFxuIE1heC4gICA6MTUwLjAwICAgICAgICAgICAgICAgICAgICAgIE1heC4gICA6Mjg1LjMgIFxuIn0= -->
+<pre><code>       ID          condition          productivity  
+ Min.   :  1.00   Length:150         Min.   :104.7  
+ 1st Qu.: 38.25   Class :character   1st Qu.:161.0  
+ Median : 75.50   Mode  :character   Median :185.0  
+ Mean   : 75.50                      Mean   :184.9  
+ 3rd Qu.:112.75                      3rd Qu.:205.0  
+ Max.   :150.00                      Max.   :285.3  </code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyB0LnRlc3TliKTmlq0yOeOAgTMw5bKB57q56Lqr5beu5byCXG50LnRlc3QgPC0gdC50ZXN0KHRhdHRvb3MgfiBhZ2UsIGRhdGEgPSBwaXJhdGVzLCBzdWJzZXQgPSBhZ2UgJWluJSBjKDI5LCAzMCkpXG50LnRlc3RcbmBgYCJ9 -->
-<pre class="r"><code># t.test判断29、30岁纹身差异
-t.test &lt;- t.test(tattoos ~ age, data = pirates, subset = age %in% c(29, 30))
-t.test</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiXG5cdFdlbGNoIFR3byBTYW1wbGUgdC10ZXN0XG5cbmRhdGE6ICB0YXR0b29zIGJ5IGFnZVxudCA9IDAuMjY1NTIsIGRmID0gMTE5LjE1LCBwLXZhbHVlID0gMC43OTExXG5hbHRlcm5hdGl2ZSBoeXBvdGhlc2lzOiB0cnVlIGRpZmZlcmVuY2UgaW4gbWVhbnMgYmV0d2VlbiBncm91cCAyOSBhbmQgZ3JvdXAgMzAgaXMgbm90IGVxdWFsIHRvIDBcbjk1IHBlcmNlbnQgY29uZmlkZW5jZSBpbnRlcnZhbDpcbiAtMS4wNTg1ODYgIDEuMzg2NDU1XG5zYW1wbGUgZXN0aW1hdGVzOlxubWVhbiBpbiBncm91cCAyOSBtZWFuIGluIGdyb3VwIDMwIFxuICAgICAgIDEwLjA4MTk2NyAgICAgICAgIDkuOTE4MDMzIFxuIn0= -->
-<pre><code>
-    Welch Two Sample t-test
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyDmlrnlt67liIbmnpBcbnJlcyA8LSBhb3YocHJvZHVjdGl2aXR5IH4gY29uZGl0aW9uLCBkYXRhID0gbXVzaWMpXG5cbiMg5p+l55yL57uT5p6cXG5zdW1tYXJ5KHJlcylcbmBgYCJ9 -->
+<pre class="r"><code># 方差分析
+res &lt;- aov(productivity ~ condition, data = music)
 
-data:  tattoos by age
-t = 0.26552, df = 119.15, p-value = 0.7911
-alternative hypothesis: true difference in means between group 29 and group 30 is not equal to 0
-95 percent confidence interval:
- -1.058586  1.386455
-sample estimates:
-mean in group 29 mean in group 30 
-       10.081967         9.918033 </code></pre>
+# 查看结果
+summary(res)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiICAgICAgICAgICAgIERmIFN1bSBTcSBNZWFuIFNxIEYgdmFsdWUgICBQcig+RikgICAgXG5jb25kaXRpb24gICAgIDIgIDI0NzM0ICAgMTIzNjcgICA5LjI5MSAwLjAwMDE1OSAqKipcblJlc2lkdWFscyAgIDE0NyAxOTU2NjEgICAgMTMzMSAgICAgICAgICAgICAgICAgICAgIFxuLS0tXG5TaWduaWYuIGNvZGVzOiAgMCDigJgqKirigJkgMC4wMDEg4oCYKirigJkgMC4wMSDigJgq4oCZIDAuMDUg4oCYLuKAmSAwLjEg4oCYIOKAmSAxXG4ifQ== -->
+<pre><code>             Df Sum Sq Mean Sq F value   Pr(&gt;F)    
+condition     2  24734   12367   9.291 0.000159 ***
+Residuals   147 195661    1331                     
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyDljaHmlrnmo4DpqozlpKflrablkozkvanmiLTnnLznvanmmK/lkKbmnInlhbPogZRcbmMudGVzdCA8LSBjaGlzcS50ZXN0KHRhYmxlKHBpcmF0ZXMkZXllcGF0Y2gsIHBpcmF0ZXMkY29sbGVnZSkpXG5jLnRlc3RcbmBgYCJ9 -->
-<pre class="r"><code># 卡方检验大学和佩戴眼罩是否有关联
-c.test &lt;- chisq.test(table(pirates$eyepatch, pirates$college))
-c.test</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyDov5vooYxUdWtleSdzIEhTROa1i+ivlVxuVHVrZXlIU0QocmVzKVxuYGBgIn0= -->
+<pre class="r"><code># 进行Tukey&#39;s HSD测试
+TukeyHSD(res)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiXG5cdFBlYXJzb24ncyBDaGktc3F1YXJlZCB0ZXN0IHdpdGggWWF0ZXMnIGNvbnRpbnVpdHlcblx0Y29ycmVjdGlvblxuXG5kYXRhOiAgdGFibGUocGlyYXRlcyRleWVwYXRjaCwgcGlyYXRlcyRjb2xsZWdlKVxuWC1zcXVhcmVkID0gMCwgZGYgPSAxLCBwLXZhbHVlID0gMVxuIn0= -->
-<pre><code>
-    Pearson&#39;s Chi-squared test with Yates&#39; continuity
-    correction
+<!-- rnb-output-begin eyJkYXRhIjoiICBUdWtleSBtdWx0aXBsZSBjb21wYXJpc29ucyBvZiBtZWFuc1xuICAgIDk1JSBmYW1pbHktd2lzZSBjb25maWRlbmNlIGxldmVsXG5cbkZpdDogYW92KGZvcm11bGEgPSBwcm9kdWN0aXZpdHkgfiBjb25kaXRpb24sIGRhdGEgPSBtdXNpYylcblxuJGNvbmRpdGlvblxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBkaWZmICAgICAgIGx3ciAgICAgICAgdXByXG5tdXNpY19ub19jaG9pY2UtbXVzaWNfY2hvaWNlIC0yNS44MjA1NzkgLTQzLjA5Njc5ICAtOC41NDQzNjdcbm5vX211c2ljLW11c2ljX2Nob2ljZSAgICAgICAgLTI4LjQ2NjQwMCAtNDUuNzQyNjEgLTExLjE5MDE4OFxubm9fbXVzaWMtbXVzaWNfbm9fY2hvaWNlICAgICAgLTIuNjQ1ODIxIC0xOS45MjIwMyAgMTQuNjMwMzkxXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBwIGFkalxubXVzaWNfbm9fY2hvaWNlLW11c2ljX2Nob2ljZSAwLjAwMTU1Mzlcbm5vX211c2ljLW11c2ljX2Nob2ljZSAgICAgICAgMC4wMDA0MjQ2XG5ub19tdXNpYy1tdXNpY19ub19jaG9pY2UgICAgIDAuOTMwMTI2MFxuIn0= -->
+<pre><code>  Tukey multiple comparisons of means
+    95% family-wise confidence level
 
-data:  table(pirates$eyepatch, pirates$college)
-X-squared = 0, df = 1, p-value = 1</code></pre>
+Fit: aov(formula = productivity ~ condition, data = music)
+
+$condition
+                                   diff       lwr        upr
+music_no_choice-music_choice -25.820579 -43.09679  -8.544367
+no_music-music_choice        -28.466400 -45.74261 -11.190188
+no_music-music_no_choice      -2.645821 -19.92203  14.630391
+                                 p adj
+music_no_choice-music_choice 0.0015539
+no_music-music_choice        0.0004246
+no_music-music_no_choice     0.9301260</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogImh3MSINCmF1dGhvcjoNCiAgICAtIFlhbmdUZW5nY2hhbw0KZG9jdW1lbnRjbGFzczogY3RleGFydA0KZ2VvbWV0cnk6ICJsZWZ0PTIuNWNtLHJpZ2h0PTJjbSx0b3A9M2NtLGJvdHRvbT0yLjVjbSINCm91dHB1dDoNCiAgcGRmX2RvY3VtZW50OiBkZWZhdWx0DQogIGh0bWxfbm90ZWJvb2s6IGRlZmF1bHQNCiAgcnRpY2xlczo6Y3RleDoNCiAgICBmaWdfY2FwdGlvbjogeWVzDQogICAgbnVtYmVyX3NlY3Rpb25zOiB5ZXMNCiAgICB0b2M6IHllcw0KY2xhc3NvcHRpb246ICJoeXBlcnJlZiwiDQotLS0NCmBgYHtyIHN0ZXAxfQ0KIyDlvJXlhaXmlbDmja4NCmxvYWQoInBpcmF0ZXMuUkRhdGEiKQ0KYGBgDQpgYGB7ciBzdGVwMn0NCiMg6Zeu6aKY6LCD5p+lDQojIEJvZHkgcGllcmNpbmcgZGF0YQ0KYW1lcmljYW4uYnAgPC0gYygzLCA1LCAyLCAxLCA0LCA0LCA2LCAzLCA1LCA0KQ0KZXVyb3BlYW4uYnAgPC0gYyg2LCA1LCA3LCA3LCA2LCAzLCA0LCA2LCA1LCA0KQ0KIyBTdG9yZSBkYXRhIGluIGEgZGF0YWZyYW0NCmVicC5zdXJ2ZXkgPC0gZGF0YS5mcmFtZSgiYnAiID0gYyhhbWVyaWNhbi5icCwgZXVyb3BlYW4uYnApLA0KImdyb3VwIiA9IHJlcChjKCJBbWVyaWNhbiIsIkV1cm9wZWFuIiksIGVhY2ggPSAxMCksc3RyaW5nc0FzRmFjdG9ycyA9IEZBTFNFKQ0KYGBgDQpgYGB7ciBzdGVwMyx3YXJuaW5nPUZBTFNFfQ0KIyDnrrHnur/lm77liKTmlq0NCmJveHBsb3QoYnAgfiBncm91cCwgZGF0YSA9IGVicC5zdXJ2ZXksIA0KICAgICAgICBtYWluID0gIua1t+ebl+i6q+S9k+epv+WtlOaVsOebrueusee6v+WbviIsDQogICAgICAgIHhsYWIgPSAi5Zyw5Yy6IiwgeWxhYiA9ICLnqb/lrZTmlbDnm64iKQ0KIyDlr7nkuo7kuK3kvY3mlbDvvIzmrKfmtLLlnLDljLrnmoTnqb/lrZTmlbDnm67mr5Tnvo7lm73pq5jvvJvlkIzml7bor7TmmI7mrKfmtLLlnLDljLrnqb/lrZTmlbDnm67lpJrnmoTkurrovoPlpJoNCiMg5a+55LqO5LiK5LiL5Zub5YiG5L2N5pWw77yM5Y+v5Lul55yL5Ye65qyn5rSy5Zyw5Yy656m/5a2U5pWw55uu5Li76KaB6ZuG5Lit5Zyo5Lit6Ze05pWw55uu55qE5rC05bmz77yb576O5Zu95Zyw5Yy65pWw55uu6ZuG5Lit5Zyo5Lit6Ze05YGP5aSn5rC05bmzDQojIOS9huS7jueuseeahOmVv+W6puWPr+S7peeci+WHuuWFtuemu+aVo+eoi+W6puebuOW3ruS4jeWkpw0KYGBgDQpgYGB7ciBzdGVwNH0NCiMgdC50ZXN05Yik5pat576O5Zu95ZKM5qyn5rSy56m/5a2U5pWw55uu5beu5byCDQpwLnRlc3QgPC0gdC50ZXN0KGJwIH4gZ3JvdXAsIGRhdGEgPSBlYnAuc3VydmV5KQ0KcC50ZXN0DQojIOWPr+S7peeci+WHuuasp+a0suWSjOe+juWbveepv+WtlOaVsOebruacieW3ruW8gg0KIyDlj6/ku6XnnIvlh7pw5YC85Li6MC4wMjE0IDwgMC4wNe+8jOivtOaYjuWcqOe9ruS/oeW6pjAuOTXnmoTmg4XlhrXkuIsNCiMg5Y+v5Lul5ouS57ud5Y6f5YGH6K6+77yM6K+05piO5beu5byC5pi+6JGXDQpgYGANCmBgYHtyIHN0ZXA1fQ0KIyB0LnRlc3TliKTmlq0yOeOAgTMw5bKB57q56Lqr5beu5byCDQp0LnRlc3QgPC0gdC50ZXN0KHRhdHRvb3MgfiBhZ2UsIGRhdGEgPSBwaXJhdGVzLCBzdWJzZXQgPSBhZ2UgJWluJSBjKDI5LCAzMCkpDQp0LnRlc3QNCiMg5rKh5pyJ6Laz5aSf6K+B5o2u6K+B5piOMjnjgIEzMOe6uei6q+aDheWGteWtmOWcqOW3ruW8gg0KIyDlj6/ku6XnnIvlh7pw5YC8MC43OTExID4gMC4wNe+8jOWcqOe9ruS/oeW6puS4ujAuOTXnmoTmg4XlhrXkuIsNCiMg5rKh5pyJ6Laz5aSf6K+B5o2u5ouS57ud5Y6f5YGH6K6+77yM5Zug5q2k5LiN6IO96K+05piO55Sx5pi+6JGX5beu5byCDQpgYGANCmBgYHtyIHN0ZXA2fQ0KIyDljaHmlrnmo4DpqozlpKflrablkozkvanmiLTnnLznvanmmK/lkKbmnInlhbPogZQNCmMudGVzdCA8LSBjaGlzcS50ZXN0KHRhYmxlKHBpcmF0ZXMkZXllcGF0Y2gsIHBpcmF0ZXMkY29sbGVnZSkpDQpjLnRlc3QNCiMg5rKh5pyJ6Laz5aSf6K+B5o2u6K+B5piO5aSn5a2m5ZKM55y8572p5pyJ5YWz6IGUDQojIOWPr+S7peeci+WHunDlgLwxID4gMC4wNe+8jOWcqOe9ruS/oeW6puS4ujAuOTXnmoTmg4XlhrXkuIsNCiMg5rKh5pyJ6Laz5aSf6K+B5o2u5ouS57ud5Y6f5YGH6K6+77yM5Zug5q2k5LiN6IO96K+05piO5Lik6ICF5pyJ5YWz6IGUDQpgYGANCg0KDQoNCg==</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogImh377ySIg0KYXV0aG9yOiAiWWFuZ1RlbmdjaGFvIg0KZG9jdW1lbnRjbGFzczogY3RleGFydA0Kb3V0cHV0Og0KICB3b3JkX2RvY3VtZW50Og0KICAgIHRvYzogeWVzDQogIGh0bWxfbm90ZWJvb2s6IGRlZmF1bHQNCiAgcnRpY2xlczo6Y3RleDoNCiAgICBmaWdfY2FwdGlvbjogeWVzDQogICAgbnVtYmVyX3NlY3Rpb25zOiB5ZXMNCiAgICB0b2M6IHllcw0KICBwZGZfZG9jdW1lbnQ6IGRlZmF1bHQNCmdlb21ldHJ5OiBsZWZ0PTIuNWNtLHJpZ2h0PTJjbSx0b3A9M2NtLGJvdHRvbT0yLjVjbQ0KY2xhc3NvcHRpb246IGh5cGVycmVmLA0KLS0tDQoNCmBgYHtyIHN0ZXAxfQ0KIyDlr7zlhaXmlbDmja4NCm11c2ljIDwtIHJlYWQuY3N2KCJtdXNpYy5jc3YiKQ0KYGBgDQpgYGB7ciBzdGVwMn0NCiMg5p+l55yL5Z+65pys5L+h5oGvDQpzdHIobXVzaWMpDQpzdW1tYXJ5KG11c2ljKQ0KYGBgDQpgYGB7ciBzdGVwM30NCiMg5pa55beu5YiG5p6QDQpyZXMgPC0gYW92KHByb2R1Y3Rpdml0eSB+IGNvbmRpdGlvbiwgZGF0YSA9IG11c2ljKQ0KDQojIOafpeeci+e7k+aenA0Kc3VtbWFyeShyZXMpDQpgYGANCmBgYHtyIHN0ZXA0fQ0KIyDov5vooYxUdWtleSdzIEhTROa1i+ivlQ0KVHVrZXlIU0QocmVzKQ0KYGBg</div>
 
 
 
@@ -1896,7 +1871,7 @@ $(document).ready(function () {
 <!-- code folding -->
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("hw1.Rmd");
+  window.initializeSourceEmbed("hw2.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>

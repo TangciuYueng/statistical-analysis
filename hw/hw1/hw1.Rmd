@@ -13,99 +13,52 @@ output:
     toc: yes
 classoption: "hyperref,"
 ---
-
-## 导入数据
 ```{r step1}
-WVS <- readRDS("WVS.rds")
-WVS$V2A <- as.character(WVS$V2A)
+# 引入数据
+load("pirates.RData")
 ```
-## 查看一共多少个国家
 ```{r step2}
-country_list <- unique(WVS$V2A)
-country_count <- length(country_list)
-print(country_count)
-# 共有61个国家
+# 问题调查
+# Body piercing data
+american.bp <- c(3, 5, 2, 1, 4, 4, 6, 3, 5, 4)
+european.bp <- c(6, 5, 7, 7, 6, 3, 4, 6, 5, 4)
+# Store data in a datafram
+ebp.survey <- data.frame("bp" = c(american.bp, european.bp),
+"group" = rep(c("American","European"), each = 10),stringsAsFactors = FALSE)
 ```
-## 筛选国家编码变量（V2A）和生后满意度变量（V23）
-```{r step3}
-filter_result <- WVS[, c("V2A", "V23")]
-# 这里展示前六行
-head(filter_result)
+```{r step3,warning=FALSE}
+# 箱线图判断
+boxplot(bp ~ group, data = ebp.survey, 
+        main = "海盗身体穿孔数目箱线图",
+        xlab = "地区", ylab = "穿孔数目")
+# 对于中位数，欧洲地区的穿孔数目比美国高；同时说明欧洲地区穿孔数目多的人较多
+# 对于上下四分位数，可以看出欧洲地区穿孔数目主要集中在中间数目的水平；美国地区数目集中在中间偏大水平
+# 但从箱的长度可以看出其离散程度相差不大
 ```
-## ⽣活满意度变量的 median, mean, standard deviation, skewness, kurtosis 统计量
 ```{r step4}
-if (!require(moments)) {
-  install.packages("moments")
-}
-library(moments)
-
-V23 <- WVS$V23
-
-median_V23 <- median(V23)
-mean_V23 <- mean(V23)
-sd_V23 <- sd(V23)
-skewness_V23 <- skewness(V23)
-kurtosis_V23 <- kurtosis(V23)
-
-cat("median:", median_V23, "\n")
-cat("mean:", mean_V23, "\n")
-cat("standard deviation:", sd_V23, "\n")
-cat("skewness:", skewness_V23, "\n")
-cat("kurtosis:", kurtosis_V23, "\n")
+# t.test判断美国和欧洲穿孔数目差异
+p.test <- t.test(bp ~ group, data = ebp.survey)
+p.test
+# 可以看出欧洲和美国穿孔数目有差异
+# 可以看出p值为0.0214 < 0.05，说明在置信度0.95的情况下
+# 可以拒绝原假设，说明差异显著
 ```
-### 中位数为7说明有一半的受统计对象的生活满意度低于7，而另一半人的生活满意度高于7
-### 平均值为6.779668说明在中位数为7的基础上，生活满意度低于7的对象打分较低，而高于7的对象打分也不高。数据分布向左倾斜
-### 标准差为2.365454说明数据差异较小，大多分布在均值附近
-### 偏度为-0.7579571说明数据相对于正太分布略微向左偏斜，数据的左侧尾部比右侧尾部更重。
-### 峰度为3.422007说明数据相对于正态分布更具有尖峰特征，即在中心处更为尖锐
-
-## 生活满意度直方图
 ```{r step5}
-library(ggplot2)
-
-p <- ggplot(WVS, aes(x=as.integer(V23))) +
-  geom_histogram(aes(y = after_stat(density)),
-        binwidth = 2, fill = "#00ccbb", 
-        color = "white", 
-        alpha = 0.7) +
-  geom_density(color = "purple", 
-        linetype = "solid",
-        adjust=3) +
-  geom_vline(aes(xintercept = mean(V23)), 
-        color = "red", 
-        linetype = "dashed", 
-        linewidth = 1) +
-  labs(title = "Distribution of Life Satisfaction",
-       x = "Satisfaction Score",
-       y = "Frequency") + 
-  geom_text(aes(label = paste("Mean:", round(mean(V23), 2))), 
-       x = mean(WVS$V23) + 0.1, y = 0, 
-       color = "red", hjust = 0, vjust = 1)
-print(p)
-# 可以看出直方图呈现左偏态，左侧有较长的尾巴，而右侧的尾巴相对较短
-# 低数值的生活满意度出现频率较高，而高数值的生活满意度出现频率较低
-# 从而使得平均值小于中位数
-# 这里呈现一种单峰分布，说明大多数人的生活满意度集中在6.78的区间附近
+# t.test判断29、30岁纹身差异
+t.test <- t.test(tattoos ~ age, data = pirates, subset = age %in% c(29, 30))
+t.test
+# 没有足够证据证明29、30纹身情况存在差异
+# 可以看出p值0.7911 > 0.05，在置信度为0.95的情况下
+# 没有足够证据拒绝原假设，因此不能说明由显著差异
 ```
-## 统计每个国家人民的平均生活满意度分数
 ```{r step6}
-country <- WVS$V2A
-satisfication <- WVS$V23
-
-avg_satisfication <- aggregate(satisfication ~ country, WVS, mean)
-
-avg_satisfication <- avg_satisfication[order(avg_satisfication$satisfication), ]
-
-p <- ggplot(avg_satisfication, 
-        aes(
-            x = reorder(country, satisfication),
-            y = satisfication)) +
-  geom_bar(stat = "identity", fill = "#00ccbb", color = "white", alpha = 0.7) +
-  labs(title = "Average Life Satisfaction by Country",
-       x = "Country",
-       y = "Average Life Satisfication") +
-    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5))
-print(p)
+# 卡方检验大学和佩戴眼罩是否有关联
+c.test <- chisq.test(table(pirates$eyepatch, pirates$college))
+c.test
+# 没有足够证据证明大学和眼罩有关联
+# 可以看出p值1 > 0.05，在置信度为0.95的情况下
+# 没有足够证据拒绝原假设，因此不能说明两者有关联
 ```
 
-### 国家编号为818的平均生活满意度最低，国家编号为484的平均生活满意度最高
+
+
