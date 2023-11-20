@@ -25,13 +25,34 @@ str(music)
 summary(music)
 ```
 ```{r step3}
+# 分组信息查看
+no_music <- music[music$condition == "no_music",][["productivity"]]
+music_no_choice <- music[music$condition == "music_no_choice", ][["productivity"]]
+music_choice <- music[music$condition == "music_choice", ][["productivity"]]
+summary(no_music)
+summary(music_no_choice)
+summary(music_choice)
+```
+```{r step4}
+# music_choice hist
+hist(music_choice, freq = F, breaks = 4, main = "music_choice")
+```
+```{r step5}
+# music_no_choice hist
+hist(music_no_choice, freq = F, breaks = 4, main = "music_no_choice")
+```
+```{r step6}
+# no_music hist
+hist(no_music, freq = F, breaks = 4, main = "no_music")
+```
+```{r step7}
 # 方差分析
 res <- aov(productivity ~ condition, data = music)
 
 # 查看结果
 summary(res)
 ```
-```{r step4}
+```{r step8}
 # 进行Tukey's HSD测试
 TukeyHSD(res)
 ```

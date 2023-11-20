@@ -1,3 +1,4 @@
+[TOC]
 # 音乐对工作效率的方差分析
 
 ## 研究问题和假设
@@ -25,6 +26,7 @@
 在本文的研究中，存在三个组(对照组、治疗组A、治疗组B)，因此我们可以利用方差分析进行三组之间的生产力差异的检测。
 
 ## 基础分析
+### 查看整体信息
 ```r
 # 导入数据
 music <- read.csv("music.csv")
@@ -43,6 +45,43 @@ summary(music)
 ##  3rd Qu.:112.75                      3rd Qu.:205.0  
 ##  Max.   :150.00                      Max.   :285.3
 ```
+### 分组查看信息
+```r
+# 分组信息查看
+no_music <- music[music$condition == "no_music",][["productivity"]]
+music_no_choice <- music[music$condition == "music_no_choice", ][["productivity"]]
+music_choice <- music[music$condition == "music_choice", ][["productivity"]]
+summary(no_music)
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   110.7   143.1   171.7   174.5   196.7   276.6
+summary(music_no_choice)
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   104.7   152.4   179.0   177.1   201.0   252.8
+summary(music_choice)
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   130.9   180.4   195.0   203.0   230.8   285.3
+```
+
+### 分组绘制直方图
+#### music_choice
+```r
+# music_choice hist
+hist(music_choice, freq = F, breaks = 4, main = "music_choice")
+```
+![](./music_choice.png)
+#### music_no_choice
+```r
+# music_no_choice hist
+hist(music_no_choice, freq = F, breaks = 4, main = "music_no_choice")
+```
+![](./music_no_choice.png)
+#### no_music
+```r
+# no_music hist
+hist(no_music, freq = F, breaks = 4, main = "no_music")
+```
+![](./no_music.png)
+
 
 
 ## 主要分析
