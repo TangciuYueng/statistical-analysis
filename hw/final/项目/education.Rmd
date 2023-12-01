@@ -1,0 +1,136 @@
+---
+title: "fianl-education"
+author:
+    - HYSM
+documentclass: ctexart
+geometry: "left=2.5cm,right=2cm,top=3cm,bottom=2.5cm"
+output:
+  pdf_document: default
+  html_notebook: default
+  rticles::ctex:
+    fig_caption: yes
+    number_sections: yes
+    toc: yes
+classoption: "hyperref,"
+---
+```{r step1, warning=FALSE}
+# 加载需要的包
+library(dplyr)
+library(ggplot2)
+
+# 读取需要数据集
+edu <- read.csv("education.csv", stringsAsFactors = F)
+
+# 查看数据结构
+str(edu)
+```
+```{r step2}
+# 统计概要
+summary(edu)
+```
+```{r step5}
+# 数据预处理
+# 检测缺失值
+any(is.na(edu))
+
+# 数据标准化
+# numeric_vars <- c("失业率", "高教总入学率")
+# edu[numeric_vars] <- scale(edu[numeric_vars])
+
+# 列名简短
+# 列名修改对应的映射字典
+col_mapping <- c(
+  "Countries and Areas" = "地区",
+  "Latitude" = "纬度",
+  "Longitude" = "经度",
+  "OOSR_Pre0Primary_Age_Male" = "学前失学率男",
+  "OOSR_Pre0Primary_Age_Female" = "学前失学率女",
+  "OOSR_Primary_Age_Male" = "小学失学率男",
+  "OOSR_Primary_Age_Female" = "小学失学率女",
+  "OOSR_Lower_Secondary_Age_Male" = "初中失学率男",
+  "OOSR_Lower_Secondary_Age_Female" = "初中失学率女",
+  "OOSR_Upper_Secondary_Age_Male" = "高中失学率男",
+  "OOSR_Upper_Secondary_Age_Female" = "高中失学率女",
+  "Completion_Rate_Primary_Male" = "小学完成率男",
+  "Completion_Rate_Primary_Female" = "小学完成率女",
+  "Completion_Rate_Lower_Secondary_Male" = "初中完成率男",
+  "Completion_Rate_Lower_Secondary_Female" = "初中完成率女",
+  "Completion_Rate_Upper_Secondary_Male" = "高中完成率男",
+  "Completion_Rate_Upper_Secondary_Female" = "高中完成率女",
+  "Grade_2_3_Proficiency_Reading" = "23年级阅读",
+  "Grade_2_3_Proficiency_Math" = "23年级数学",
+  "Primary_End_Proficiency_Reading" = "小学结束阅读",
+  "Primary_End_Proficiency_Math" = "小学结束数学",
+  "Lower_Secondary_End_Proficiency_Reading" = "初中结束阅读",
+  "Lower_Secondary_End_Proficiency_Math" = "初中结束数学",
+  "Youth_15_24_Literacy_Rate_Male" = "青年识字率男",
+  "Youth_15_24_Literacy_Rate_Female" = "青年识字率女",
+  "Birth_Rate" = "出生率",
+  "Gross_Primary_Education_Enrollment" = "小教总入学率",
+  "Gross_Tertiary_Education_Enrollment" = "高教总入学率",
+  "Unemployment_Rate" = "失业率"
+)
+
+# 修改列名
+colnames(edu) <- col_mapping
+
+```
+```{r step4}
+# 参数值意味着不同的行数: 351, 325
+nrow(edu)
+```
+
+```{r step3}
+# 相关性分析
+
+require(corrplot)
+library(Hmisc)
+
+correlation <- cor(edu[, 4:29])
+symnum_res <- symnum(correlation)
+
+cor_1 <- rcorr(as.matrix(edu[, 4:29]))
+M <- cor_1$r
+p_mat <- cor_1$P
+# tl.cex 调整字体大小
+# pch.cex 调整叉叉大小
+corrplot(M, type = "upper", order = "hclust", p.mat = p_mat, sig.level = 0.01, tl.cex = 0.7, pch.cex = 0.7)
+```
+
+```{r}
+# 重读
+edu <- read.csv("education.csv", stringsAsFactors = F)
+```
+
+
+```{r step6}
+
+# 获取最后两列与其他列的相关系
+enroll <- cor(edu[, 28], edu[, c(-1, -2, -3, -28)])
+unemploy <- cor(edu[, 29], edu[, c(-1, -2, -3, -29)])
+
+# 设置阈值
+threshold <- 0.7
+
+# 获取强相关的列号
+(enroll_related_idx <- which(abs(enroll) > threshold))
+(unemploy_related_idx <- which(abs(unemploy) > threshold))
+```
+```{r step7}
+# 使用相关性强的构建入学率的回归模型
+enroll_related_col <- edu[, c(enroll_related_idx, 28)]
+
+enroll_model <- lm(Gross_Tertiary_Education_Enrollment~., data = enroll_related_col)
+enroll_model$coefficients
+(enroll_sum = summary(enroll_model))
+enroll_sum$coefficients
+```
+```{r step8}
+# 使用相关性强的构建失业率的回归模型
+unemploy_related_col <- edu[, c(unemploy_related_idx, 29)]
+
+unemploy_model <- lm(Unemployment_Rate~., data = unemploy_related_col)
+unemploy_model$coefficients
+(unemploy_sum = summary(unemploy_model))
+unemploy_sum$coefficients
+```
