@@ -1,0 +1,129 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+# 导入必要的包
+library(caret)
+library(pROC)
+```
+
+```{r step01}
+# 导入数据
+data <- read.csv("titanic.csv")
+```
+
+```{r step02}
+# 数据分析和结论
+summary(data)  # 查看数据摘要统计信息
+table(data$Survived)  # 统计存活和死亡人数
+```
+
+```{r step03}
+# 数据预处理
+# 处理缺失值
+data$Age[is.na(data$Age)] <- mean(data$Age, na.rm = TRUE)  # 使用平均值填充年龄的缺失值
+```
+
+```{r step04}
+# 特征选择和转换
+data <- data[, c("Survived", "Pclass", "Sex", "Age", "SibSp", "Fare", "Embarked")]
+data$Sex <- as.factor(data$Sex)
+data$Embarked <- as.character(data$Embarked)  # 将Embarked转换为字符型
+# 在训练数据中指定Embarked的水平
+data$Embarked <- factor(data$Embarked, levels = c("C", "Q", "S"))
+```
+
+```{r}
+# 数据建模及模型质量评估
+set.seed(123)
+split <- createDataPartition(data$Survived, p = 0.7, list = FALSE)  # 使用'caret'包进行数据划分
+train_data <- data[split, ]
+test_data <- data[-split, ]
+```
+
+```{r}
+# 建立预测模型（逻辑回归）
+model <- glm(Survived ~ ., data = train_data, family = binomial)
+summary(model)
+```
+```{r}
+# 模型评估
+pred <- predict(model, newdata = test_data, type = "response")
+auc <- roc(test_data$Survived, pred)
+auc$auc
+
+# AUC的取值范围在0到1之间，表示模型对正负样本的分类能力。AUC值越接近1，表示模型的分类能力越好；而AUC值接近0.5，则说明模型的分类能力较差，基本等同于随机猜测。
+# AUC的值为0.849，这意味着该模型具有相对较好的分类能力。通常，AUC大于0.8被认为是一个很好的模型性能指标。
+```
+```{r}
+# 回答问题：“什么样的人更有可能存活下来？”
+
+# 分析性别对存活的影响
+table(data$Sex, data$Survived)
+prop.table(table(data$Sex, data$Survived), margin = 1)  # 计算性别存活率
+
+# 表格中的列表示分类结果，其中0列表示未存活，1列表示存活。
+# 根据该数据，女性的存活率明显高于男性，因为女性存活率约为74.2%，而男性存活率仅约为18.9%。
+
+```
+
+```{r}
+# 分析社会经济阶级对存活的影响
+table(data$Pclass, data$Survived)
+prop.table(table(data$Pclass, data$Survived), margin = 1)  # 计算社会经济阶级存活率
+
+# 根据表格中的数据，我们可以得出以下结论：
+
+# 在1级社会经济阶级中，80人未存活，136人存活。
+# 在2级社会经济阶级中，97人未存活，87人存活。
+# 在3级社会经济阶级中，372人未存活，119人存活。
+
+# 根据该数据，社会经济阶级越高，存活率越高。例如，在1级社会经济阶级中，存活率约为62.9%，而在3级社会经济阶级中，存活率仅约为24.2%。
+```
+```{r}
+# 分类分析 - 年龄对存活情况的影响
+# 可以根据具体需求进行年龄分组，这里以18岁以下和18岁以上为例
+data$Age_Group <- ifelse(data$Age < 18, "Under 18", "18 and Above")
+table(data$Age_Group, data$Survived)
+prop.table(table(data$Age_Group, data$Survived), margin = 1)  # 计算年龄分组存活率
+
+# 同理，年轻的活，老的死
+```
+
+```{r}
+# 分类分析 - 兄弟姐妹/配偶数量对存活情况的影响
+table(data$SibSp, data$Survived)
+prop.table(table(data$SibSp, data$Survived), margin = 1)  # 计算兄弟姐妹/配偶数量存活率
+
+# 第一行表示"兄弟姐妹/配偶数量"为0的组中有398人未存活，210人存活；第二行表示"兄弟姐妹/配偶数量"为1的组中有97人未存活，112人存活，依此类推。
+
+# 有1,2个兄弟姐妹的活，其他死
+```
+```{r}
+# 分类分析 - 船票价格对存活情况的影响
+# 可以根据具体需求进行价格分组，这里以中位数为界进行分组
+data$Fare_Group <- ifelse(data$Fare < median(data$Fare), "Low Fare", "High Fare")
+table(data$Fare_Group, data$Survived)
+prop.table(table(data$Fare_Group, data$Survived), margin = 1)  # 计算船票价格分组存活率
+
+# 船票贵的活，便宜的死
+```
+```{r}
+# 分类分析 - 登船港口对存活情况的影响
+table(data$Embarked, data$Survived)
+prop.table(table(data$Embarked, data$Survived), margin = 1)  # 计算登船港口存活率
+
+# 港口C活 Q要死不活 S死
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
