@@ -1,129 +1,213 @@
 ---
-title: "R Notebook"
-output: html_notebook
+title: "final-titanic"
+author:
+  - "2154177 何应豪"
+  - "2151298 杨滕超"
+  - "2151299 苏家铭"
+  - "2151294 马威"
+documentclass: ctexart
+geometry: "left=2.5cm, right=2cm, top=3cm, bottom=1cm"
+output:
+  rticles::ctex:
+    fig_caption: yes
+    number_sections: yes
+    toc: yes
 ---
+# 研究问题和假设
+## 背景
+泰坦尼克号的沉没是历史上最著名的沉船事故之一。1912年4月15日，在处女航中，被认为“永不沉没”的皇家邮轮泰坦尼克号与冰山相撞后沉没。不幸的是，船上没有足够的救生艇容纳所有人，导致2224名乘客和船员中的1502人死亡。
+尽管全世界依然沉浸在惨烈的事故所带来的伤痛当中，但是有一些人却认为虽然生存有一些运气因素，但似乎有些群体比其他群体更有可能生存下来，因此他们尽可能收集到了一些乘客数据（无论是否已故），想看看什么样的人更有可能存活下来。
+我们很幸运地获取到了这些数据，希望通过乘客信息建立分类预测模型，尝试解答“什么样的人更有可能活下来”的迷思。
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+## 现有研究
+已搜集到近 900 名乘客的信息，包括舱位等级、姓名、性别、年龄、同乘兄弟姐妹/配偶数量、票价、登船港口等。是否存活是一个二分类变量，0为死亡，1为存活。
 
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+## 研究问题
+什么样的人更有可能活下来？
 
-```{r}
+## 研究假设
+1. 你敢假定？
+
+# 数据分析方法选择
+1. 本实验需要进行预测，因变量是否存活是一个“0/1”二分类问题，且有多个解释变量。适合使用广义线性回归建立预测模型
+
+# 基础分析
+## 准备工作
+```{r preparation, message=FALSE, warning=FALSE}
 # 导入必要的包
-library(caret)
-library(pROC)
-```
+library(caret)    # 生成训练集和测试集
+library(ROCR)     # glm
+library(pROC)     # ROC面积计算
+library(ggplot2)  # 画图
+library(mice)     # 缺失值可视化
 
-```{r step01}
+# 清除当前镜像中的数据
+rm(list = ls())
+
 # 导入数据
 data <- read.csv("titanic.csv")
+
+# 预处理判断
+md.pattern(data, rotate.names = TRUE)   # 检测缺失值
+print(length(which(duplicated(data))))  # 检测重复行
+```
+## 数据预处理
+### 处理缺失值
+```{r pretreatment}
+# 年龄（缺失形式：NA）
+data$Age[is.na(data$Age)] <- mean(data$Age, na.rm = TRUE)  # 使用平均值填充
+
+# 登船港口（缺失形式：""）
+freq.table <- table(data$Embarked)  # 使用table函数计算频数
+mode <- names(freq.table)[which.max(freq.table)]  # 找到频数最大的元素（众数）
+data$Embarked[nchar(data$Embarked) == 0] <- mode  # 使用众数填补
+rm(freq.table)
+rm(mode)
 ```
 
-```{r step02}
-# 数据分析和结论
-summary(data)  # 查看数据摘要统计信息
-table(data$Survived)  # 统计存活和死亡人数
+### 数据规范
+```{r standardization}
+data$Fare <- scale(data$Fare)  # 票价过于分散，因此进行规范处理
 ```
 
-```{r step03}
-# 数据预处理
-# 处理缺失值
-data$Age[is.na(data$Age)] <- mean(data$Age, na.rm = TRUE)  # 使用平均值填充年龄的缺失值
+### 指定因子水平
+```{r factor}
+data$Survived <- as.factor(data$Survived)  # 是否存活
+data$Sex <- as.factor(data$Sex)            # 性别
+data$Embarked <- as.factor(data$Embarked)  # 登船港口
 ```
 
-```{r step04}
-# 特征选择和转换
+## 初步分析
+```{r basic analysis, results='hold', fig.show='hold', warning=FALSE}
+# 选取所需数据进行初步分析
 data <- data[, c("Survived", "Pclass", "Sex", "Age", "SibSp", "Fare", "Embarked")]
-data$Sex <- as.factor(data$Sex)
-data$Embarked <- as.character(data$Embarked)  # 将Embarked转换为字符型
-# 在训练数据中指定Embarked的水平
-data$Embarked <- factor(data$Embarked, levels = c("C", "Q", "S"))
+summary(data)
+
+# 各因素的可视化
+# 舱位等级
+ggplot(data, aes(x = Pclass, fill = factor(Survived))) +
+  geom_bar(binwidth = 1, position = "stack", stat = "bin", alpha = 0.5) +
+  geom_text(
+    stat = "count",
+    aes(label = stat(count)),
+    position = position_stack(vjust = 0.5),
+    size = 3
+  )
+ggplot(data, aes(x = Pclass, fill = factor(Survived))) +
+  geom_bar(binwidth = 1, position = "fill", stat = "bin", alpha = 0.5)
+
+# 性别
+ggplot(data, aes(x = Sex, fill = factor(Survived))) +
+  geom_bar(position = "stack", alpha = 0.5) +
+  geom_text(
+    stat = "count",
+    aes(label = stat(count)),
+    position = position_stack(vjust = 0.5),
+    size = 3
+  )
+ggplot(data, aes(x = Sex, fill = factor(Survived))) +
+  geom_bar(position = "fill", alpha = 0.5)
+
+# 年龄
+ggplot(data, aes(x = Age, fill = factor(Survived))) +
+  geom_bar(binwidth = 2, position = "stack", stat = "bin", alpha = 0.5) +
+  geom_text(
+    stat = "count",
+    aes(label = stat(count)),
+    position = position_stack(),
+    size = 1
+  )
+ggplot(data, aes(x = Age, fill = factor(Survived))) +
+  geom_bar(binwidth = 2, position = "fill", stat = "bin", alpha = 0.5)
+
+# 同乘兄弟姐妹/配偶
+ggplot(data, aes(x = SibSp, fill = factor(Survived))) +
+  geom_bar(binwidth = 1, position = "stack", stat = "bin", alpha = 0.5) +
+  geom_text(
+    stat = "count",
+    aes(label = stat(count)),
+    position = position_stack(vjust = 0.5),
+    size = 3
+  )
+ggplot(data, aes(x = SibSp, fill = factor(Survived))) +
+  geom_bar(binwidth = 1, position = "fill", stat = "bin", alpha = 0.5)
+
+# 票价
+ggplot(data, aes(x = Fare, fill = factor(Survived))) +
+  geom_bar(binwidth = 0.2, position = "stack", stat = "bin", alpha = 0.5)
+ggplot(data, aes(x = Fare, fill = factor(Survived))) +
+  geom_bar(binwidth = 0.2, position = "fill", stat = "bin", alpha = 0.5)
+
+# 登船港口
+ggplot(data, aes(x = Embarked, fill = factor(Survived))) +
+  geom_bar(position = "stack", alpha = 0.5) +
+  geom_text(
+    stat = "count",
+    aes(label = stat(count)),
+    position = position_stack(vjust = 0.5),
+    size = 3
+  )
+ggplot(data, aes(x = Embarked, fill = factor(Survived))) +
+  geom_bar(position = "fill", alpha = 0.5)
 ```
 
-```{r}
-# 数据建模及模型质量评估
+# 主要分析
+## 进行数据划分
+```{r data divide}
 set.seed(123)
-split <- createDataPartition(data$Survived, p = 0.7, list = FALSE)  # 使用'caret'包进行数据划分
-train_data <- data[split, ]
-test_data <- data[-split, ]
+split <- createDataPartition(data$Survived, p = 0.7, list = FALSE)
+train_data <- data[split, ]  # 训练集
+test_data <- data[-split, ]  # 测试集
 ```
-
-```{r}
-# 建立预测模型（逻辑回归）
+## 建立预测模型（全因素）
+```{r model 1}
 model <- glm(Survived ~ ., data = train_data, family = binomial)
 summary(model)
 ```
-```{r}
-# 模型评估
-pred <- predict(model, newdata = test_data, type = "response")
+## 建立预测模型（显著影响因素）
+```{r model 2}
+model <- glm(Survived ~ Pclass+Sex+Age+SibSp+Embarked, data = train_data, family = binomial)
+summary(model)
+```
+## 模型评估
+```{r evaluation, results='hold', fig.show='hold'}
+pred <- predict(model, test_data, type = "response")
 auc <- roc(test_data$Survived, pred)
 auc$auc
-
-# AUC的取值范围在0到1之间，表示模型对正负样本的分类能力。AUC值越接近1，表示模型的分类能力越好；而AUC值接近0.5，则说明模型的分类能力较差，基本等同于随机猜测。
-# AUC的值为0.849，这意味着该模型具有相对较好的分类能力。通常，AUC大于0.8被认为是一个很好的模型性能指标。
-```
-```{r}
-# 回答问题：“什么样的人更有可能存活下来？”
-
-# 分析性别对存活的影响
-table(data$Sex, data$Survived)
-prop.table(table(data$Sex, data$Survived), margin = 1)  # 计算性别存活率
-
-# 表格中的列表示分类结果，其中0列表示未存活，1列表示存活。
-# 根据该数据，女性的存活率明显高于男性，因为女性存活率约为74.2%，而男性存活率仅约为18.9%。
-
+pred <- prediction(pred, test_data$Survived)
+plot(performance(pred, "tpr", "fpr"), colorize = T, lwd = 3, main = "ROC curve")
+abline(a = 0, b = 1, lty = 2, lwd = 3, col = "black")
 ```
 
-```{r}
-# 分析社会经济阶级对存活的影响
-table(data$Pclass, data$Survived)
-prop.table(table(data$Pclass, data$Survived), margin = 1)  # 计算社会经济阶级存活率
+# 分析结果解读
 
-# 根据表格中的数据，我们可以得出以下结论：
-
-# 在1级社会经济阶级中，80人未存活，136人存活。
-# 在2级社会经济阶级中，97人未存活，87人存活。
-# 在3级社会经济阶级中，372人未存活，119人存活。
-
-# 根据该数据，社会经济阶级越高，存活率越高。例如，在1级社会经济阶级中，存活率约为62.9%，而在3级社会经济阶级中，存活率仅约为24.2%。
-```
-```{r}
-# 分类分析 - 年龄对存活情况的影响
-# 可以根据具体需求进行年龄分组，这里以18岁以下和18岁以上为例
-data$Age_Group <- ifelse(data$Age < 18, "Under 18", "18 and Above")
-table(data$Age_Group, data$Survived)
-prop.table(table(data$Age_Group, data$Survived), margin = 1)  # 计算年龄分组存活率
-
-# 同理，年轻的活，老的死
+## 对生存率的各影响因素（由于1为生存，所以将odds称为生存几率）：
+```{r coefficients}
+print(exp(model$coefficients))
 ```
 
-```{r}
-# 分类分析 - 兄弟姐妹/配偶数量对存活情况的影响
-table(data$SibSp, data$Survived)
-prop.table(table(data$SibSp, data$Survived), margin = 1)  # 计算兄弟姐妹/配偶数量存活率
+### 舱位等级
+- **预测：** 每下降一级（等级数+1），生存几率**降为**原来的**0.286倍**
+- **解读：** 能坐到更高等级舱位的人可能会有更高的地位，在紧急情况下就有可能被“优待”得更多。也可能是富人并没有参与救生艇的共同分配，能自己搞到救生艇提前逃跑。
 
-# 第一行表示"兄弟姐妹/配偶数量"为0的组中有398人未存活，210人存活；第二行表示"兄弟姐妹/配偶数量"为1的组中有97人未存活，112人存活，依此类推。
+### 性别
+- **预测：** 为男性时，生存几率**降为**原来的**0.056倍**
+- **解读：** 女士优先
 
-# 有1,2个兄弟姐妹的活，其他死
-```
-```{r}
-# 分类分析 - 船票价格对存活情况的影响
-# 可以根据具体需求进行价格分组，这里以中位数为界进行分组
-data$Fare_Group <- ifelse(data$Fare < median(data$Fare), "Low Fare", "High Fare")
-table(data$Fare_Group, data$Survived)
-prop.table(table(data$Fare_Group, data$Survived), margin = 1)  # 计算船票价格分组存活率
+### 年龄
+- **预测：** 每大一岁，生存几率**降为**原来的**0.961倍**
+- **解读：** 小孩优先
 
-# 船票贵的活，便宜的死
-```
-```{r}
-# 分类分析 - 登船港口对存活情况的影响
-table(data$Embarked, data$Survived)
-prop.table(table(data$Embarked, data$Survived), margin = 1)  # 计算登船港口存活率
+### 同乘兄弟姐妹/配偶数量
+- **预测：** 每多1个，生存几率**降为**原来的**0.714倍**
+- **解读：** 落单的人优先
 
-# 港口C活 Q要死不活 S死
-```
+### 登船港口
+- **预测：** 在S港（Southampton）登船时，生存几率**降为**原来的**0.452倍**
+- **解读：** （在南安普顿港登船的人会有什么特点？）
 
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
-
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
-
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+## 总结
+1. 就搜集到的数据以及生成的预测模型上看，的确一些因素对于生存率有显著影响
+2. 高等级舱位/女性/年轻人/落单/不在Southampton登船，满足以上部分因素的人更有可能活下来
+3. 在主要分析中生成的模型里，仅保留显著影响因素的模型AIC值较小，因此选择它进行后续评估分析。其AUC值为0.817 > 0.8，测试集结果说明，该模型具有相对较好的分类能力
+4. 总而言之，现在再回头分析“哪些人更有可能活下来”这类问题，我们可以窥视到历史上一场惨烈事故中的众生百态：舍己为人、尔虞我诈、争先恐后、绝望等待......同样，也可以看到当时社会的一些价值观体现。但今时不同以往，了解到这段历史的沉痛后，在新的社会环境下，随着航海技术、人们的观念等发生改变，或许这类问题有了重新研究的价值。但我们更希望的是事故永远不会发生，大家平平安安，一帆风顺。

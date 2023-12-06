@@ -1,5 +1,5 @@
 ---
-title: "fianl-education"
+title: "final-education"
 author:
     - HYSM
 documentclass: ctexart

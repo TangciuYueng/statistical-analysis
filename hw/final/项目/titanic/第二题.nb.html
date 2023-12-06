@@ -11,7 +11,7 @@
 
 
 
-<title>R Notebook</title>
+<title>final-titanic</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -1746,7 +1746,7 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">R Notebook</h1>
+<h1 class="title toc-ignore">final-titanic</h1>
 
 </div>
 
@@ -1760,304 +1760,560 @@ the chunk or by placing your cursor inside it and pressing
 <em>Ctrl+Shift+Enter</em>.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyDlr7zlhaXlv4XopoHnmoTljIVcbmxpYnJhcnkoY2FyZXQpXG5saWJyYXJ5KHBST0MpXG5gYGAifQ== -->
-<pre class="r"><code># 导入必要的包
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyDlr7zlhaXlv4XopoHnmoTljIVcbmxpYnJhcnkoY2FyZXQpXG5saWJyYXJ5KHBST0MpXG5gYGBcbmBgYCJ9 -->
+<pre class="r"><code>```r
+# 导入必要的包
 library(caret)
 library(pROC)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyDlr7zlhaXmlbDmja5cbmRhdGEgPC0gcmVhZC5jc3YoXCJ0aXRhbmljLmNzdlwiKVxuYGBgIn0= -->
-<pre class="r"><code># 导入数据
-data &lt;- read.csv(&quot;titanic.csv&quot;)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyDmlbDmja7liIbmnpDlkoznu5PorrpcbnN1bW1hcnkoZGF0YSkgICMg5p+l55yL5pWw5o2u5pGY6KaB57uf6K6h5L+h5oGvXG5gYGAifQ== -->
-<pre class="r"><code># 数据分析和结论
-summary(data)  # 查看数据摘要统计信息</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiICBQYXNzZW5nZXJJZCAgICAgICBTdXJ2aXZlZCAgICAgICAgICBQY2xhc3MgICAgICAgICAgTmFtZSAgICAgICAgICAgICAgIFNleCAgICAgICAgICAgICAgICAgQWdlICAgICAgICAgICAgU2liU3AgICAgICBcbiBNaW4uICAgOiAgMS4wICAgTWluLiAgIDowLjAwMDAgICBNaW4uICAgOjEuMDAwICAgTGVuZ3RoOjg5MSAgICAgICAgIExlbmd0aDo4OTEgICAgICAgICBNaW4uICAgOiAwLjQyICAgTWluLiAgIDowLjAwMCAgXG4gMXN0IFF1LjoyMjMuNSAgIDFzdCBRdS46MC4wMDAwICAgMXN0IFF1LjoyLjAwMCAgIENsYXNzIDpjaGFyYWN0ZXIgICBDbGFzcyA6Y2hhcmFjdGVyICAgMXN0IFF1LjoyMC4xMiAgIDFzdCBRdS46MC4wMDAgIFxuIE1lZGlhbiA6NDQ2LjAgICBNZWRpYW4gOjAuMDAwMCAgIE1lZGlhbiA6My4wMDAgICBNb2RlICA6Y2hhcmFjdGVyICAgTW9kZSAgOmNoYXJhY3RlciAgIE1lZGlhbiA6MjguMDAgICBNZWRpYW4gOjAuMDAwICBcbiBNZWFuICAgOjQ0Ni4wICAgTWVhbiAgIDowLjM4MzggICBNZWFuICAgOjIuMzA5ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBNZWFuICAgOjI5LjcwICAgTWVhbiAgIDowLjUyMyAgXG4gM3JkIFF1Ljo2NjguNSAgIDNyZCBRdS46MS4wMDAwICAgM3JkIFF1LjozLjAwMCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgM3JkIFF1LjozOC4wMCAgIDNyZCBRdS46MS4wMDAgIFxuIE1heC4gICA6ODkxLjAgICBNYXguICAgOjEuMDAwMCAgIE1heC4gICA6My4wMDAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIE1heC4gICA6ODAuMDAgICBNYXguICAgOjguMDAwICBcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBOQSdzICAgOjE3NyAgICAgICAgICAgICAgICAgICAgXG4gICAgIFBhcmNoICAgICAgICAgICBUaWNrZXQgICAgICAgICAgICAgICBGYXJlICAgICAgICAgICBDYWJpbiAgICAgICAgICAgICBFbWJhcmtlZCAgICAgICAgXG4gTWluLiAgIDowLjAwMDAgICBMZW5ndGg6ODkxICAgICAgICAgTWluLiAgIDogIDAuMDAgICBMZW5ndGg6ODkxICAgICAgICAgTGVuZ3RoOjg5MSAgICAgICAgXG4gMXN0IFF1LjowLjAwMDAgICBDbGFzcyA6Y2hhcmFjdGVyICAgMXN0IFF1LjogIDcuOTEgICBDbGFzcyA6Y2hhcmFjdGVyICAgQ2xhc3MgOmNoYXJhY3RlciAgXG4gTWVkaWFuIDowLjAwMDAgICBNb2RlICA6Y2hhcmFjdGVyICAgTWVkaWFuIDogMTQuNDUgICBNb2RlICA6Y2hhcmFjdGVyICAgTW9kZSAgOmNoYXJhY3RlciAgXG4gTWVhbiAgIDowLjM4MTYgICAgICAgICAgICAgICAgICAgICAgTWVhbiAgIDogMzIuMjAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXG4gM3JkIFF1LjowLjAwMDAgICAgICAgICAgICAgICAgICAgICAgM3JkIFF1LjogMzEuMDAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXG4gTWF4LiAgIDo2LjAwMDAgICAgICAgICAgICAgICAgICAgICAgTWF4LiAgIDo1MTIuMzMgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXG4ifQ== -->
-<pre><code>  PassengerId       Survived          Pclass          Name               Sex                 Age            SibSp      
- Min.   :  1.0   Min.   :0.0000   Min.   :1.000   Length:891         Length:891         Min.   : 0.42   Min.   :0.000  
- 1st Qu.:223.5   1st Qu.:0.0000   1st Qu.:2.000   Class :character   Class :character   1st Qu.:20.12   1st Qu.:0.000  
- Median :446.0   Median :0.0000   Median :3.000   Mode  :character   Mode  :character   Median :28.00   Median :0.000  
- Mean   :446.0   Mean   :0.3838   Mean   :2.309                                         Mean   :29.70   Mean   :0.523  
- 3rd Qu.:668.5   3rd Qu.:1.0000   3rd Qu.:3.000                                         3rd Qu.:38.00   3rd Qu.:1.000  
- Max.   :891.0   Max.   :1.0000   Max.   :3.000                                         Max.   :80.00   Max.   :8.000  
-                                                                                        NA&#39;s   :177                    
-     Parch           Ticket               Fare           Cabin             Embarked        
- Min.   :0.0000   Length:891         Min.   :  0.00   Length:891         Length:891        
- 1st Qu.:0.0000   Class :character   1st Qu.:  7.91   Class :character   Class :character  
- Median :0.0000   Mode  :character   Median : 14.45   Mode  :character   Mode  :character  
- Mean   :0.3816                      Mean   : 32.20                                        
- 3rd Qu.:0.0000                      3rd Qu.: 31.00                                        
- Max.   :6.0000                      Max.   :512.33                                        
-                                                                                           </code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGFibGUoZGF0YSRTdXJ2aXZlZCkgICMg57uf6K6h5a2Y5rS75ZKM5q275Lqh5Lq65pWwXG5gYGAifQ== -->
-<pre class="r"><code>table(data$Survived)  # 统计存活和死亡人数</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiXG4gIDAgICAxIFxuNTQ5IDM0MiBcbiJ9 -->
 <pre><code>
-  0   1 
-549 342 </code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyDmlbDmja7pooTlpITnkIZcbiMg5aSE55CG57y65aSx5YC8XG5kYXRhJEFnZVtpcy5uYShkYXRhJEFnZSldIDwtIG1lYW4oZGF0YSRBZ2UsIG5hLnJtID0gVFJVRSkgICMg5L2/55So5bmz5Z2H5YC85aGr5YWF5bm06b6E55qE57y65aSx5YC8XG5gYGAifQ== -->
-<pre class="r"><code># 数据预处理
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyDlr7zlhaXmlbDmja5cbmRhdGEgPC0gcmVhZC5jc3YoXFx0aXRhbmljLmNzdlxcKVxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+# 导入数据
+data &lt;- read.csv(\titanic.csv\)</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyDmlbDmja7liIbmnpDlkoznu5PorrpcbnN1bW1hcnkoZGF0YSkgICMg5p+l55yL5pWw5o2u5pGY6KaB57uf6K6h5L+h5oGvXG5gYGBcbmBgYCJ9 --&gt;
+
+```r
+```r
+# 数据分析和结论
+summary(data)  # 查看数据摘要统计信息</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiICBQYXNzZW5nZXJJZCAgICAgICBTdXJ2aXZlZCAgICAgICAgICBQY2xhc3MgICAgICAgICAgTmFtZSAgICAgICAgICAgICAgIFNleCAgICAgICAgICAgICAgICAgQWdlICAgICAgICAgICAgU2liU3AgICAgICBcbiBNaW4uICAgOiAgMS4wICAgTWluLiAgIDowLjAwMDAgICBNaW4uICAgOjEuMDAwICAgTGVuZ3RoOjg5MSAgICAgICAgIExlbmd0aDo4OTEgICAgICAgICBNaW4uICAgOiAwLjQyICAgTWluLiAgIDowLjAwMCAgXG4gMXN0IFF1LjoyMjMuNSAgIDFzdCBRdS46MC4wMDAwICAgMXN0IFF1LjoyLjAwMCAgIENsYXNzIDpjaGFyYWN0ZXIgICBDbGFzcyA6Y2hhcmFjdGVyICAgMXN0IFF1LjoyMC4xMiAgIDFzdCBRdS46MC4wMDAgIFxuIE1lZGlhbiA6NDQ2LjAgICBNZWRpYW4gOjAuMDAwMCAgIE1lZGlhbiA6My4wMDAgICBNb2RlICA6Y2hhcmFjdGVyICAgTW9kZSAgOmNoYXJhY3RlciAgIE1lZGlhbiA6MjguMDAgICBNZWRpYW4gOjAuMDAwICBcbiBNZWFuICAgOjQ0Ni4wICAgTWVhbiAgIDowLjM4MzggICBNZWFuICAgOjIuMzA5ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBNZWFuICAgOjI5LjcwICAgTWVhbiAgIDowLjUyMyAgXG4gM3JkIFF1Ljo2NjguNSAgIDNyZCBRdS46MS4wMDAwICAgM3JkIFF1LjozLjAwMCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgM3JkIFF1LjozOC4wMCAgIDNyZCBRdS46MS4wMDAgIFxuIE1heC4gICA6ODkxLjAgICBNYXguICAgOjEuMDAwMCAgIE1heC4gICA6My4wMDAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIE1heC4gICA6ODAuMDAgICBNYXguICAgOjguMDAwICBcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBOQSdzICAgOjE3NyAgICAgICAgICAgICAgICAgICAgXG4gICAgIFBhcmNoICAgICAgICAgICBUaWNrZXQgICAgICAgICAgICAgICBGYXJlICAgICAgICAgICBDYWJpbiAgICAgICAgICAgICBFbWJhcmtlZCAgICAgICAgXG4gTWluLiAgIDowLjAwMDAgICBMZW5ndGg6ODkxICAgICAgICAgTWluLiAgIDogIDAuMDAgICBMZW5ndGg6ODkxICAgICAgICAgTGVuZ3RoOjg5MSAgICAgICAgXG4gMXN0IFF1LjowLjAwMDAgICBDbGFzcyA6Y2hhcmFjdGVyICAgMXN0IFF1LjogIDcuOTEgICBDbGFzcyA6Y2hhcmFjdGVyICAgQ2xhc3MgOmNoYXJhY3RlciAgXG4gTWVkaWFuIDowLjAwMDAgICBNb2RlICA6Y2hhcmFjdGVyICAgTWVkaWFuIDogMTQuNDUgICBNb2RlICA6Y2hhcmFjdGVyICAgTW9kZSAgOmNoYXJhY3RlciAgXG4gTWVhbiAgIDowLjM4MTYgICAgICAgICAgICAgICAgICAgICAgTWVhbiAgIDogMzIuMjAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXG4gM3JkIFF1LjowLjAwMDAgICAgICAgICAgICAgICAgICAgICAgM3JkIFF1LjogMzEuMDAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXG4gTWF4LiAgIDo2LjAwMDAgICAgICAgICAgICAgICAgICAgICAgTWF4LiAgIDo1MTIuMzMgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXG4ifQ== --&gt;
+</code></pre>
+<p>PassengerId Survived Pclass Name Sex Age SibSp<br />
+Min. : 1.0 Min. :0.0000 Min. :1.000 Length:891 Length:891 Min. : 0.42
+Min. :0.000<br />
+1st Qu.:223.5 1st Qu.:0.0000 1st Qu.:2.000 Class :character Class
+:character 1st Qu.:20.12 1st Qu.:0.000<br />
+Median :446.0 Median :0.0000 Median :3.000 Mode :character Mode
+:character Median :28.00 Median :0.000<br />
+Mean :446.0 Mean :0.3838 Mean :2.309 Mean :29.70 Mean :0.523<br />
+3rd Qu.:668.5 3rd Qu.:1.0000 3rd Qu.:3.000 3rd Qu.:38.00 3rd
+Qu.:1.000<br />
+Max. :891.0 Max. :1.0000 Max. :3.000 Max. :80.00 Max. :8.000<br />
+NA’s :177<br />
+Parch Ticket Fare Cabin Embarked<br />
+Min. :0.0000 Length:891 Min. : 0.00 Length:891 Length:891<br />
+1st Qu.:0.0000 Class :character 1st Qu.: 7.91 Class :character Class
+:character<br />
+Median :0.0000 Mode :character Median : 14.45 Mode :character Mode
+:character<br />
+Mean :0.3816 Mean : 32.20<br />
+3rd Qu.:0.0000 3rd Qu.: 31.00<br />
+Max. :6.0000 Max. :512.33</p>
+<pre><code>
+
+
+&lt;!-- rnb-output-end --&gt;
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxudGFibGUoZGF0YSRTdXJ2aXZlZCkgICMg57uf6K6h5a2Y5rS75ZKM5q275Lqh5Lq65pWwXG5gYGBcbmBgYCJ9 --&gt;
+
+```r
+```r
+table(data$Survived)  # 统计存活和死亡人数</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiXG4gIDAgICAxIFxuNTQ5IDM0MiBcbiJ9 --&gt;
+</code></pre>
+<p>0 1 549 342</p>
+<pre><code>
+
+
+&lt;!-- rnb-output-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyDmlbDmja7pooTlpITnkIZcbiMg5aSE55CG57y65aSx5YC8XG5kYXRhJEFnZVtpcy5uYShkYXRhJEFnZSldIDwtIG1lYW4oZGF0YSRBZ2UsIG5hLnJtID0gVFJVRSkgICMg5L2/55So5bmz5Z2H5YC85aGr5YWF5bm06b6E55qE57y65aSx5YC8XG5gYGBcbmBgYCJ9 --&gt;
+
+```r
+```r
+# 数据预处理
 # 处理缺失值
 data$Age[is.na(data$Age)] &lt;- mean(data$Age, na.rm = TRUE)  # 使用平均值填充年龄的缺失值</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyDnibnlvoHpgInmi6nlkozovazmjaJcbmRhdGEgPC0gZGF0YVssIGMoXCJTdXJ2aXZlZFwiLCBcIlBjbGFzc1wiLCBcIlNleFwiLCBcIkFnZVwiLCBcIlNpYlNwXCIsIFwiRmFyZVwiLCBcIkVtYmFya2VkXCIpXVxuZGF0YSRTZXggPC0gYXMuZmFjdG9yKGRhdGEkU2V4KVxuZGF0YSRFbWJhcmtlZCA8LSBhcy5jaGFyYWN0ZXIoZGF0YSRFbWJhcmtlZCkgICMg5bCGRW1iYXJrZWTovazmjaLkuLrlrZfnrKblnotcbiMg5Zyo6K6t57uD5pWw5o2u5Lit5oyH5a6aRW1iYXJrZWTnmoTmsLTlubNcbmRhdGEkRW1iYXJrZWQgPC0gZmFjdG9yKGRhdGEkRW1iYXJrZWQsIGxldmVscyA9IGMoXCJDXCIsIFwiUVwiLCBcIlNcIikpXG5gYGAifQ== -->
-<pre class="r"><code># 特征选择和转换
-data &lt;- data[, c(&quot;Survived&quot;, &quot;Pclass&quot;, &quot;Sex&quot;, &quot;Age&quot;, &quot;SibSp&quot;, &quot;Fare&quot;, &quot;Embarked&quot;)]
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyDnibnlvoHpgInmi6nlkozovazmjaJcbmRhdGEgPC0gZGF0YVssIGMoXFxTdXJ2aXZlZFxcLCBcXFBjbGFzc1xcLCBcXFNleFxcLCBcXEFnZVxcLCBcXFNpYlNwXFwsIFxcRmFyZVxcLCBcXEVtYmFya2VkXFwpXVxuZGF0YSRTZXggPC0gYXMuZmFjdG9yKGRhdGEkU2V4KVxuZGF0YSRFbWJhcmtlZCA8LSBhcy5jaGFyYWN0ZXIoZGF0YSRFbWJhcmtlZCkgICMg5bCGRW1iYXJrZWTovazmjaLkuLrlrZfnrKblnotcbiMg5Zyo6K6t57uD5pWw5o2u5Lit5oyH5a6aRW1iYXJrZWTnmoTmsLTlubNcbmRhdGEkRW1iYXJrZWQgPC0gZmFjdG9yKGRhdGEkRW1iYXJrZWQsIGxldmVscyA9IGMoXFxDXFwsIFxcUVxcLCBcXFNcXCkpXG5gYGBcbmBgYCJ9 --&gt;
+
+```r
+```r
+# 特征选择和转换
+data &lt;- data[, c(\Survived\, \Pclass\, \Sex\, \Age\, \SibSp\, \Fare\, \Embarked\)]
 data$Sex &lt;- as.factor(data$Sex)
 data$Embarked &lt;- as.character(data$Embarked)  # 将Embarked转换为字符型
 # 在训练数据中指定Embarked的水平
-data$Embarked &lt;- factor(data$Embarked, levels = c(&quot;C&quot;, &quot;Q&quot;, &quot;S&quot;))</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyDmlbDmja7lu7rmqKHlj4rmqKHlnovotKjph4/or4TkvLBcbnNldC5zZWVkKDEyMylcbnNwbGl0IDwtIGNyZWF0ZURhdGFQYXJ0aXRpb24oZGF0YSRTdXJ2aXZlZCwgcCA9IDAuNywgbGlzdCA9IEZBTFNFKSAgIyDkvb/nlKgnY2FyZXQn5YyF6L+b6KGM5pWw5o2u5YiS5YiGXG50cmFpbl9kYXRhIDwtIGRhdGFbc3BsaXQsIF1cbnRlc3RfZGF0YSA8LSBkYXRhWy1zcGxpdCwgXVxuYGBgIn0= -->
-<pre class="r"><code># 数据建模及模型质量评估
+data$Embarked &lt;- factor(data$Embarked, levels = c(\C\, \Q\, \S\))</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyDmlbDmja7lu7rmqKHlj4rmqKHlnovotKjph4/or4TkvLBcbnNldC5zZWVkKDEyMylcbnNwbGl0IDwtIGNyZWF0ZURhdGFQYXJ0aXRpb24oZGF0YSRTdXJ2aXZlZCwgcCA9IDAuNywgbGlzdCA9IEZBTFNFKSAgIyDkvb/nlKgnY2FyZXQn5YyF6L+b6KGM5pWw5o2u5YiS5YiGXG50cmFpbl9kYXRhIDwtIGRhdGFbc3BsaXQsIF1cbnRlc3RfZGF0YSA8LSBkYXRhWy1zcGxpdCwgXVxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+# 数据建模及模型质量评估
 set.seed(123)
 split &lt;- createDataPartition(data$Survived, p = 0.7, list = FALSE)  # 使用&#39;caret&#39;包进行数据划分
 train_data &lt;- data[split, ]
 test_data &lt;- data[-split, ]</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyDlu7rnq4vpooTmtYvmqKHlnovvvIjpgLvovpHlm57lvZLvvIlcbm1vZGVsIDwtIGdsbShTdXJ2aXZlZCB+IC4sIGRhdGEgPSB0cmFpbl9kYXRhLCBmYW1pbHkgPSBiaW5vbWlhbClcbnN1bW1hcnkobW9kZWwpXG5gYGAifQ== -->
-<pre class="r"><code># 建立预测模型（逻辑回归）
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyDlu7rnq4vpooTmtYvmqKHlnovvvIjpgLvovpHlm57lvZLvvIlcbm1vZGVsIDwtIGdsbShTdXJ2aXZlZCB+IC4sIGRhdGEgPSB0cmFpbl9kYXRhLCBmYW1pbHkgPSBiaW5vbWlhbClcbnN1bW1hcnkobW9kZWwpXG5gYGBcbmBgYCJ9 --&gt;
+
+```r
+```r
+# 建立预测模型（逻辑回归）
 model &lt;- glm(Survived ~ ., data = train_data, family = binomial)
 summary(model)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiXG5DYWxsOlxuZ2xtKGZvcm11bGEgPSBTdXJ2aXZlZCB+IC4sIGZhbWlseSA9IGJpbm9taWFsLCBkYXRhID0gdHJhaW5fZGF0YSlcblxuQ29lZmZpY2llbnRzOlxuICAgICAgICAgICAgIEVzdGltYXRlIFN0ZC4gRXJyb3IgeiB2YWx1ZSBQcig+fHp8KSAgICBcbihJbnRlcmNlcHQpICA1LjcwNTk0NiAgIDAuNjgwNzg2ICAgOC4zODEgIDwgMmUtMTYgKioqXG5QY2xhc3MgICAgICAtMS4xNTkyNzggICAwLjE2ODE5OSAgLTYuODkyIDUuNDllLTEyICoqKlxuU2V4bWFsZSAgICAgLTIuNzQ4NzU0ICAgMC4yMzc3MjIgLTExLjU2MyAgPCAyZS0xNiAqKipcbkFnZSAgICAgICAgIC0wLjA0Nzk4NCAgIDAuMDA5NjMyICAtNC45ODIgNi4zMWUtMDcgKioqXG5TaWJTcCAgICAgICAtMC4zNTA2MjMgICAwLjEzMDA0NiAgLTIuNjk2ICAwLjAwNzAxICoqIFxuRmFyZSAgICAgICAgIDAuMDAxNDYyICAgMC4wMDI1NDcgICAwLjU3NCAgMC41NjU5MyAgICBcbkVtYmFya2VkUSAgICAwLjQxNTk0MSAgIDAuNDQ2Njc4ICAgMC45MzEgIDAuMzUxNzYgICAgXG5FbWJhcmtlZFMgICAtMC40ODE4NjYgICAwLjI4MTQ5OCAgLTEuNzEyICAwLjA4Njk0IC4gIFxuLS0tXG5TaWduaWYuIGNvZGVzOiAgMCDigJgqKirigJkgMC4wMDEg4oCYKirigJkgMC4wMSDigJgq4oCZIDAuMDUg4oCYLuKAmSAwLjEg4oCYIOKAmSAxXG5cbihEaXNwZXJzaW9uIHBhcmFtZXRlciBmb3IgYmlub21pYWwgZmFtaWx5IHRha2VuIHRvIGJlIDEpXG5cbiAgICBOdWxsIGRldmlhbmNlOiA4MzMuMzcgIG9uIDYyMyAgZGVncmVlcyBvZiBmcmVlZG9tXG5SZXNpZHVhbCBkZXZpYW5jZTogNTQ2LjM1ICBvbiA2MTYgIGRlZ3JlZXMgb2YgZnJlZWRvbVxuQUlDOiA1NjIuMzVcblxuTnVtYmVyIG9mIEZpc2hlciBTY29yaW5nIGl0ZXJhdGlvbnM6IDVcbiJ9 -->
 <pre><code>
-Call:
-glm(formula = Survived ~ ., family = binomial, data = train_data)
+&lt;!-- rnb-source-end --&gt;
 
-Coefficients:
-             Estimate Std. Error z value Pr(&gt;|z|)    
-(Intercept)  5.705946   0.680786   8.381  &lt; 2e-16 ***
-Pclass      -1.159278   0.168199  -6.892 5.49e-12 ***
-Sexmale     -2.748754   0.237722 -11.563  &lt; 2e-16 ***
-Age         -0.047984   0.009632  -4.982 6.31e-07 ***
-SibSp       -0.350623   0.130046  -2.696  0.00701 ** 
-Fare         0.001462   0.002547   0.574  0.56593    
-EmbarkedQ    0.415941   0.446678   0.931  0.35176    
-EmbarkedS   -0.481866   0.281498  -1.712  0.08694 .  
----
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+&lt;!-- rnb-output-begin eyJkYXRhIjoiXG5DYWxsOlxuZ2xtKGZvcm11bGEgPSBTdXJ2aXZlZCB+IC4sIGZhbWlseSA9IGJpbm9taWFsLCBkYXRhID0gdHJhaW5fZGF0YSlcblxuQ29lZmZpY2llbnRzOlxuICAgICAgICAgICAgIEVzdGltYXRlIFN0ZC4gRXJyb3IgeiB2YWx1ZSBQcig+fHp8KSAgICBcbihJbnRlcmNlcHQpICA1LjcwNTk0NiAgIDAuNjgwNzg2ICAgOC4zODEgIDwgMmUtMTYgKioqXG5QY2xhc3MgICAgICAtMS4xNTkyNzggICAwLjE2ODE5OSAgLTYuODkyIDUuNDllLTEyICoqKlxuU2V4bWFsZSAgICAgLTIuNzQ4NzU0ICAgMC4yMzc3MjIgLTExLjU2MyAgPCAyZS0xNiAqKipcbkFnZSAgICAgICAgIC0wLjA0Nzk4NCAgIDAuMDA5NjMyICAtNC45ODIgNi4zMWUtMDcgKioqXG5TaWJTcCAgICAgICAtMC4zNTA2MjMgICAwLjEzMDA0NiAgLTIuNjk2ICAwLjAwNzAxICoqIFxuRmFyZSAgICAgICAgIDAuMDAxNDYyICAgMC4wMDI1NDcgICAwLjU3NCAgMC41NjU5MyAgICBcbkVtYmFya2VkUSAgICAwLjQxNTk0MSAgIDAuNDQ2Njc4ICAgMC45MzEgIDAuMzUxNzYgICAgXG5FbWJhcmtlZFMgICAtMC40ODE4NjYgICAwLjI4MTQ5OCAgLTEuNzEyICAwLjA4Njk0IC4gIFxuLS0tXG5TaWduaWYuIGNvZGVzOiAgMCDigJgqKirigJkgMC4wMDEg4oCYKirigJkgMC4wMSDigJgq4oCZIDAuMDUg4oCYLuKAmSAwLjEg4oCYIOKAmSAxXG5cbihEaXNwZXJzaW9uIHBhcmFtZXRlciBmb3IgYmlub21pYWwgZmFtaWx5IHRha2VuIHRvIGJlIDEpXG5cbiAgICBOdWxsIGRldmlhbmNlOiA4MzMuMzcgIG9uIDYyMyAgZGVncmVlcyBvZiBmcmVlZG9tXG5SZXNpZHVhbCBkZXZpYW5jZTogNTQ2LjM1ICBvbiA2MTYgIGRlZ3JlZXMgb2YgZnJlZWRvbVxuQUlDOiA1NjIuMzVcblxuTnVtYmVyIG9mIEZpc2hlciBTY29yaW5nIGl0ZXJhdGlvbnM6IDVcbiJ9 --&gt;
+</code></pre>
+<p>Call: glm(formula = Survived ~ ., family = binomial, data =
+train_data)</p>
+<p>Coefficients: Estimate Std. Error z value Pr(&gt;|z|)<br />
+(Intercept) 5.705946 0.680786 8.381 &lt; 2e-16 <strong><em> Pclass
+-1.159278 0.168199 -6.892 5.49e-12 </em></strong> Sexmale -2.748754
+0.237722 -11.563 &lt; 2e-16 <strong><em> Age -0.047984 0.009632 -4.982
+6.31e-07 </em></strong> SibSp -0.350623 0.130046 -2.696 0.00701 ** Fare
+0.001462 0.002547 0.574 0.56593<br />
+EmbarkedQ 0.415941 0.446678 0.931 0.35176<br />
+EmbarkedS -0.481866 0.281498 -1.712 0.08694 .<br />
+— Signif. codes: 0 ‘<em><strong>’ 0.001 ‘</strong>’ 0.01 ‘</em>’ 0.05
+‘.’ 0.1 ‘ ’ 1</p>
+<p>(Dispersion parameter for binomial family taken to be 1)</p>
+<pre><code>Null deviance: 833.37  on 623  degrees of freedom</code></pre>
+<p>Residual deviance: 546.35 on 616 degrees of freedom AIC: 562.35</p>
+<p>Number of Fisher Scoring iterations: 5</p>
+<pre><code>
 
-(Dispersion parameter for binomial family taken to be 1)
 
-    Null deviance: 833.37  on 623  degrees of freedom
-Residual deviance: 546.35  on 616  degrees of freedom
-AIC: 562.35
+&lt;!-- rnb-output-end --&gt;
 
-Number of Fisher Scoring iterations: 5</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyDmqKHlnovor4TkvLBcbnByZWQgPC0gcHJlZGljdChtb2RlbCwgbmV3ZGF0YSA9IHRlc3RfZGF0YSwgdHlwZSA9IFwicmVzcG9uc2VcIilcbmF1YyA8LSByb2ModGVzdF9kYXRhJFN1cnZpdmVkLCBwcmVkKVxuYGBgIn0= -->
-<pre class="r"><code># 模型评估
-pred &lt;- predict(model, newdata = test_data, type = &quot;response&quot;)
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyDmqKHlnovor4TkvLBcbnByZWQgPC0gcHJlZGljdChtb2RlbCwgbmV3ZGF0YSA9IHRlc3RfZGF0YSwgdHlwZSA9IFxccmVzcG9uc2VcXClcbmF1YyA8LSByb2ModGVzdF9kYXRhJFN1cnZpdmVkLCBwcmVkKVxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+# 模型评估
+pred &lt;- predict(model, newdata = test_data, type = \response\)
 auc &lt;- roc(test_data$Survived, pred)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiU2V0dGluZyBsZXZlbHM6IGNvbnRyb2wgPSAwLCBjYXNlID0gMVxuU2V0dGluZyBkaXJlY3Rpb246IGNvbnRyb2xzIDwgY2FzZXNcbiJ9 -->
-<pre><code>Setting levels: control = 0, case = 1
-Setting direction: controls &lt; cases</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYXVjJGF1Y1xuYGBgIn0= -->
-<pre class="r"><code>auc$auc</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiQXJlYSB1bmRlciB0aGUgY3VydmU6IDAuODQ5XG4ifQ== -->
-<pre><code>Area under the curve: 0.849</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBBVUPnmoTlj5blgLzojIPlm7TlnKgw5YiwMeS5i+mXtO+8jOihqOekuuaooeWei+Wvueato+i0n+agt+acrOeahOWIhuexu+iDveWKm+OAgkFVQ+WAvOi2iuaOpei/kTHvvIzooajnpLrmqKHlnovnmoTliIbnsbvog73lipvotorlpb3vvJvogIxBVUPlgLzmjqXov5EwLjXvvIzliJnor7TmmI7mqKHlnovnmoTliIbnsbvog73lipvovoPlt67vvIzln7rmnKznrYnlkIzkuo7pmo/mnLrnjJzmtYvjgIJcbiMgQVVD55qE5YC85Li6MC44NDnvvIzov5nmhI/lkbPnnYDor6XmqKHlnovlhbfmnInnm7jlr7novoPlpb3nmoTliIbnsbvog73lipvjgILpgJrluLjvvIxBVUPlpKfkuo4wLjjooqvorqTkuLrmmK/kuIDkuKrlvojlpb3nmoTmqKHlnovmgKfog73mjIfmoIfjgIJcbmBgYCJ9 -->
-<pre class="r"><code># AUC的取值范围在0到1之间，表示模型对正负样本的分类能力。AUC值越接近1，表示模型的分类能力越好；而AUC值接近0.5，则说明模型的分类能力较差，基本等同于随机猜测。
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiU2V0dGluZyBsZXZlbHM6IGNvbnRyb2wgPSAwLCBjYXNlID0gMVxuU2V0dGluZyBkaXJlY3Rpb246IGNvbnRyb2xzIDwgY2FzZXNcbiJ9 --&gt;
+</code></pre>
+<p>Setting levels: control = 0, case = 1 Setting direction: controls
+&lt; cases</p>
+<pre><code>
+
+
+&lt;!-- rnb-output-end --&gt;
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuYXVjJGF1Y1xuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+auc$auc</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiQXJlYSB1bmRlciB0aGUgY3VydmU6IDAuODQ5XG4ifQ== --&gt;
+</code></pre>
+<p>Area under the curve: 0.849</p>
+<pre><code>
+
+
+&lt;!-- rnb-output-end --&gt;
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyBBVUPnmoTlj5blgLzojIPlm7TlnKgw5YiwMeS5i+mXtO+8jOihqOekuuaooeWei+Wvueato+i0n+agt+acrOeahOWIhuexu+iDveWKm+OAgkFVQ+WAvOi2iuaOpei/kTHvvIzooajnpLrmqKHlnovnmoTliIbnsbvog73lipvotorlpb3vvJvogIxBVUPlgLzmjqXov5EwLjXvvIzliJnor7TmmI7mqKHlnovnmoTliIbnsbvog73lipvovoPlt67vvIzln7rmnKznrYnlkIzkuo7pmo/mnLrnjJzmtYvjgIJcbiMgQVVD55qE5YC85Li6MC44NDnvvIzov5nmhI/lkbPnnYDor6XmqKHlnovlhbfmnInnm7jlr7novoPlpb3nmoTliIbnsbvog73lipvjgILpgJrluLjvvIxBVUPlpKfkuo4wLjjooqvorqTkuLrmmK/kuIDkuKrlvojlpb3nmoTmqKHlnovmgKfog73mjIfmoIfjgIJcbmBgYFxuYGBgIn0= --&gt;
+
+```r
+```r
+# AUC的取值范围在0到1之间，表示模型对正负样本的分类能力。AUC值越接近1，表示模型的分类能力越好；而AUC值接近0.5，则说明模型的分类能力较差，基本等同于随机猜测。
 # AUC的值为0.849，这意味着该模型具有相对较好的分类能力。通常，AUC大于0.8被认为是一个很好的模型性能指标。</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyDlm57nrZTpl67popjvvJrigJzku4DkuYjmoLfnmoTkurrmm7TmnInlj6/og73lrZjmtLvkuIvmnaXvvJ/igJ1cblxuIyDliIbmnpDmgKfliKvlr7nlrZjmtLvnmoTlvbHlk41cbnRhYmxlKGRhdGEkU2V4LCBkYXRhJFN1cnZpdmVkKVxuYGBgIn0= -->
-<pre class="r"><code># 回答问题：“什么样的人更有可能存活下来？”
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyDlm57nrZTpl67popjvvJrigJzku4DkuYjmoLfnmoTkurrmm7TmnInlj6/og73lrZjmtLvkuIvmnaXvvJ/igJ1cblxuIyDliIbmnpDmgKfliKvlr7nlrZjmtLvnmoTlvbHlk41cbnRhYmxlKGRhdGEkU2V4LCBkYXRhJFN1cnZpdmVkKVxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+# 回答问题：“什么样的人更有可能存活下来？”
 
 # 分析性别对存活的影响
 table(data$Sex, data$Survived)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiICAgICAgICBcbiAgICAgICAgICAgMCAgIDFcbiAgZmVtYWxlICA4MSAyMzNcbiAgbWFsZSAgIDQ2OCAxMDlcbiJ9 -->
-<pre><code>        
-           0   1
-  female  81 233
-  male   468 109</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucHJvcC50YWJsZSh0YWJsZShkYXRhJFNleCwgZGF0YSRTdXJ2aXZlZCksIG1hcmdpbiA9IDEpICAjIOiuoeeul+aAp+WIq+WtmOa0u+eOh1xuYGBgIn0= -->
-<pre class="r"><code>prop.table(table(data$Sex, data$Survived), margin = 1)  # 计算性别存活率</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiICAgICAgICBcbiAgICAgICAgICAgICAgICAgMCAgICAgICAgIDFcbiAgZmVtYWxlIDAuMjU3OTYxOCAwLjc0MjAzODJcbiAgbWFsZSAgIDAuODExMDkxOSAwLjE4ODkwODFcbiJ9 -->
-<pre><code>        
-                 0         1
-  female 0.2579618 0.7420382
-  male   0.8110919 0.1889081</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyDooajmoLzkuK3nmoTliJfooajnpLrliIbnsbvnu5PmnpzvvIzlhbbkuK0w5YiX6KGo56S65pyq5a2Y5rS777yMMeWIl+ihqOekuuWtmOa0u+OAglxuIyDmoLnmja7or6XmlbDmja7vvIzlpbPmgKfnmoTlrZjmtLvnjofmmI7mmL7pq5jkuo7nlLfmgKfvvIzlm6DkuLrlpbPmgKflrZjmtLvnjofnuqbkuLo3NC4yJe+8jOiAjOeUt+aAp+WtmOa0u+eOh+S7hee6puS4ujE4Ljkl44CCXG5cbmBgYCJ9 -->
-<pre class="r"><code># 表格中的列表示分类结果，其中0列表示未存活，1列表示存活。
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiICAgICAgICBcbiAgICAgICAgICAgMCAgIDFcbiAgZmVtYWxlICA4MSAyMzNcbiAgbWFsZSAgIDQ2OCAxMDlcbiJ9 --&gt;
+</code></pre>
+<pre><code>       0   1</code></pre>
+<p>female 81 233 male 468 109</p>
+<pre><code>
+
+
+&lt;!-- rnb-output-end --&gt;
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxucHJvcC50YWJsZSh0YWJsZShkYXRhJFNleCwgZGF0YSRTdXJ2aXZlZCksIG1hcmdpbiA9IDEpICAjIOiuoeeul+aAp+WIq+WtmOa0u+eOh1xuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+prop.table(table(data$Sex, data$Survived), margin = 1)  # 计算性别存活率</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiICAgICAgICBcbiAgICAgICAgICAgICAgICAgMCAgICAgICAgIDFcbiAgZmVtYWxlIDAuMjU3OTYxOCAwLjc0MjAzODJcbiAgbWFsZSAgIDAuODExMDkxOSAwLjE4ODkwODFcbiJ9 --&gt;
+</code></pre>
+<pre><code>             0         1</code></pre>
+<p>female 0.2579618 0.7420382 male 0.8110919 0.1889081</p>
+<pre><code>
+
+
+&lt;!-- rnb-output-end --&gt;
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyDooajmoLzkuK3nmoTliJfooajnpLrliIbnsbvnu5PmnpzvvIzlhbbkuK0w5YiX6KGo56S65pyq5a2Y5rS777yMMeWIl+ihqOekuuWtmOa0u+OAglxuIyDmoLnmja7or6XmlbDmja7vvIzlpbPmgKfnmoTlrZjmtLvnjofmmI7mmL7pq5jkuo7nlLfmgKfvvIzlm6DkuLrlpbPmgKflrZjmtLvnjofnuqbkuLo3NC4yJe+8jOiAjOeUt+aAp+WtmOa0u+eOh+S7hee6puS4ujE4Ljkl44CCXG5cbmBgYFxuYGBgIn0= --&gt;
+
+```r
+```r
+# 表格中的列表示分类结果，其中0列表示未存活，1列表示存活。
 # 根据该数据，女性的存活率明显高于男性，因为女性存活率约为74.2%，而男性存活率仅约为18.9%。
 </code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyDliIbmnpDnpL7kvJrnu4/mtY7pmLbnuqflr7nlrZjmtLvnmoTlvbHlk41cbnRhYmxlKGRhdGEkUGNsYXNzLCBkYXRhJFN1cnZpdmVkKVxuYGBgIn0= -->
-<pre class="r"><code># 分析社会经济阶级对存活的影响
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyDliIbmnpDnpL7kvJrnu4/mtY7pmLbnuqflr7nlrZjmtLvnmoTlvbHlk41cbnRhYmxlKGRhdGEkUGNsYXNzLCBkYXRhJFN1cnZpdmVkKVxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+# 分析社会经济阶级对存活的影响
 table(data$Pclass, data$Survived)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiICAgXG4gICAgICAwICAgMVxuICAxICA4MCAxMzZcbiAgMiAgOTcgIDg3XG4gIDMgMzcyIDExOVxuIn0= -->
-<pre><code>   
-      0   1
-  1  80 136
-  2  97  87
-  3 372 119</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucHJvcC50YWJsZSh0YWJsZShkYXRhJFBjbGFzcywgZGF0YSRTdXJ2aXZlZCksIG1hcmdpbiA9IDEpICAjIOiuoeeul+ekvuS8mue7j+a1jumYtue6p+WtmOa0u+eOh1xuYGBgIn0= -->
-<pre class="r"><code>prop.table(table(data$Pclass, data$Survived), margin = 1)  # 计算社会经济阶级存活率</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiICAgXG4gICAgICAgICAgICAwICAgICAgICAgMVxuICAxIDAuMzcwMzcwNCAwLjYyOTYyOTZcbiAgMiAwLjUyNzE3MzkgMC40NzI4MjYxXG4gIDMgMC43NTc2Mzc1IDAuMjQyMzYyNVxuIn0= -->
-<pre><code>   
-            0         1
-  1 0.3703704 0.6296296
-  2 0.5271739 0.4728261
-  3 0.7576375 0.2423625</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyDmoLnmja7ooajmoLzkuK3nmoTmlbDmja7vvIzmiJHku6zlj6/ku6Xlvpflh7rku6XkuIvnu5PorrrvvJpcblxuIyDlnKgx57qn56S+5Lya57uP5rWO6Zi257qn5Lit77yMODDkurrmnKrlrZjmtLvvvIwxMzbkurrlrZjmtLvjgIJcbiMg5ZyoMue6p+ekvuS8mue7j+a1jumYtue6p+S4re+8jDk35Lq65pyq5a2Y5rS777yMODfkurrlrZjmtLvjgIJcbiMg5ZyoM+e6p+ekvuS8mue7j+a1jumYtue6p+S4re+8jDM3MuS6uuacquWtmOa0u++8jDExOeS6uuWtmOa0u+OAglxuXG4jIOagueaNruivpeaVsOaNru+8jOekvuS8mue7j+a1jumYtue6p+i2iumrmO+8jOWtmOa0u+eOh+i2iumrmOOAguS+i+Wmgu+8jOWcqDHnuqfnpL7kvJrnu4/mtY7pmLbnuqfkuK3vvIzlrZjmtLvnjofnuqbkuLo2Mi45Je+8jOiAjOWcqDPnuqfnpL7kvJrnu4/mtY7pmLbnuqfkuK3vvIzlrZjmtLvnjofku4XnuqbkuLoyNC4yJeOAglxuYGBgIn0= -->
-<pre class="r"><code># 根据表格中的数据，我们可以得出以下结论：
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiICAgXG4gICAgICAwICAgMVxuICAxICA4MCAxMzZcbiAgMiAgOTcgIDg3XG4gIDMgMzcyIDExOVxuIn0= --&gt;
+</code></pre>
+<pre><code>  0   1</code></pre>
+<p>1 80 136 2 97 87 3 372 119</p>
+<pre><code>
+
+
+&lt;!-- rnb-output-end --&gt;
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxucHJvcC50YWJsZSh0YWJsZShkYXRhJFBjbGFzcywgZGF0YSRTdXJ2aXZlZCksIG1hcmdpbiA9IDEpICAjIOiuoeeul+ekvuS8mue7j+a1jumYtue6p+WtmOa0u+eOh1xuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+prop.table(table(data$Pclass, data$Survived), margin = 1)  # 计算社会经济阶级存活率</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiICAgXG4gICAgICAgICAgICAwICAgICAgICAgMVxuICAxIDAuMzcwMzcwNCAwLjYyOTYyOTZcbiAgMiAwLjUyNzE3MzkgMC40NzI4MjYxXG4gIDMgMC43NTc2Mzc1IDAuMjQyMzYyNVxuIn0= --&gt;
+</code></pre>
+<pre><code>        0         1</code></pre>
+<p>1 0.3703704 0.6296296 2 0.5271739 0.4728261 3 0.7576375 0.2423625</p>
+<pre><code>
+
+
+&lt;!-- rnb-output-end --&gt;
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyDmoLnmja7ooajmoLzkuK3nmoTmlbDmja7vvIzmiJHku6zlj6/ku6Xlvpflh7rku6XkuIvnu5PorrrvvJpcblxuIyDlnKgx57qn56S+5Lya57uP5rWO6Zi257qn5Lit77yMODDkurrmnKrlrZjmtLvvvIwxMzbkurrlrZjmtLvjgIJcbiMg5ZyoMue6p+ekvuS8mue7j+a1jumYtue6p+S4re+8jDk35Lq65pyq5a2Y5rS777yMODfkurrlrZjmtLvjgIJcbiMg5ZyoM+e6p+ekvuS8mue7j+a1jumYtue6p+S4re+8jDM3MuS6uuacquWtmOa0u++8jDExOeS6uuWtmOa0u+OAglxuXG4jIOagueaNruivpeaVsOaNru+8jOekvuS8mue7j+a1jumYtue6p+i2iumrmO+8jOWtmOa0u+eOh+i2iumrmOOAguS+i+Wmgu+8jOWcqDHnuqfnpL7kvJrnu4/mtY7pmLbnuqfkuK3vvIzlrZjmtLvnjofnuqbkuLo2Mi45Je+8jOiAjOWcqDPnuqfnpL7kvJrnu4/mtY7pmLbnuqfkuK3vvIzlrZjmtLvnjofku4XnuqbkuLoyNC4yJeOAglxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+# 根据表格中的数据，我们可以得出以下结论：
 
 # 在1级社会经济阶级中，80人未存活，136人存活。
 # 在2级社会经济阶级中，97人未存活，87人存活。
 # 在3级社会经济阶级中，372人未存活，119人存活。
 
 # 根据该数据，社会经济阶级越高，存活率越高。例如，在1级社会经济阶级中，存活率约为62.9%，而在3级社会经济阶级中，存活率仅约为24.2%。</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyDliIbnsbvliIbmnpAgLSDlubTpvoTlr7nlrZjmtLvmg4XlhrXnmoTlvbHlk41cbiMg5Y+v5Lul5qC55o2u5YW35L2T6ZyA5rGC6L+b6KGM5bm06b6E5YiG57uE77yM6L+Z6YeM5LulMTjlsoHku6XkuIvlkowxOOWygeS7peS4iuS4uuS+i1xuZGF0YSRBZ2VfR3JvdXAgPC0gaWZlbHNlKGRhdGEkQWdlIDwgMTgsIFwiVW5kZXIgMThcIiwgXCIxOCBhbmQgQWJvdmVcIilcbnRhYmxlKGRhdGEkQWdlX0dyb3VwLCBkYXRhJFN1cnZpdmVkKVxuYGBgIn0= -->
-<pre class="r"><code># 分类分析 - 年龄对存活情况的影响
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyDliIbnsbvliIbmnpAgLSDlubTpvoTlr7nlrZjmtLvmg4XlhrXnmoTlvbHlk41cbiMg5Y+v5Lul5qC55o2u5YW35L2T6ZyA5rGC6L+b6KGM5bm06b6E5YiG57uE77yM6L+Z6YeM5LulMTjlsoHku6XkuIvlkowxOOWygeS7peS4iuS4uuS+i1xuZGF0YSRBZ2VfR3JvdXAgPC0gaWZlbHNlKGRhdGEkQWdlIDwgMTgsIFxcVW5kZXIgMThcXCwgXFwxOCBhbmQgQWJvdmVcXClcbnRhYmxlKGRhdGEkQWdlX0dyb3VwLCBkYXRhJFN1cnZpdmVkKVxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+# 分类分析 - 年龄对存活情况的影响
 # 可以根据具体需求进行年龄分组，这里以18岁以下和18岁以上为例
-data$Age_Group &lt;- ifelse(data$Age &lt; 18, &quot;Under 18&quot;, &quot;18 and Above&quot;)
+data$Age_Group &lt;- ifelse(data$Age &lt; 18, \Under 18\, \18 and Above\)
 table(data$Age_Group, data$Survived)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiICAgICAgICAgICAgICBcbiAgICAgICAgICAgICAgICAgMCAgIDFcbiAgMTggYW5kIEFib3ZlIDQ5NyAyODFcbiAgVW5kZXIgMTggICAgICA1MiAgNjFcbiJ9 -->
-<pre><code>              
-                 0   1
-  18 and Above 497 281
-  Under 18      52  61</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucHJvcC50YWJsZSh0YWJsZShkYXRhJEFnZV9Hcm91cCwgZGF0YSRTdXJ2aXZlZCksIG1hcmdpbiA9IDEpICAjIOiuoeeul+W5tOm+hOWIhue7hOWtmOa0u+eOh1xuYGBgIn0= -->
-<pre class="r"><code>prop.table(table(data$Age_Group, data$Survived), margin = 1)  # 计算年龄分组存活率</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiICAgICAgICAgICAgICBcbiAgICAgICAgICAgICAgICAgICAgICAgMCAgICAgICAgIDFcbiAgMTggYW5kIEFib3ZlIDAuNjM4ODE3NSAwLjM2MTE4MjVcbiAgVW5kZXIgMTggICAgIDAuNDYwMTc3MCAwLjUzOTgyMzBcbiJ9 -->
-<pre><code>              
-                       0         1
-  18 and Above 0.6388175 0.3611825
-  Under 18     0.4601770 0.5398230</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyDliIbnsbvliIbmnpAgLSDlhYTlvJ/lp5Dlprkv6YWN5YG25pWw6YeP5a+55a2Y5rS75oOF5Ya155qE5b2x5ZONXG50YWJsZShkYXRhJFNpYlNwLCBkYXRhJFN1cnZpdmVkKVxuYGBgIn0= -->
-<pre class="r"><code># 分类分析 - 兄弟姐妹/配偶数量对存活情况的影响
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiICAgICAgICAgICAgICBcbiAgICAgICAgICAgICAgICAgMCAgIDFcbiAgMTggYW5kIEFib3ZlIDQ5NyAyODFcbiAgVW5kZXIgMTggICAgICA1MiAgNjFcbiJ9 --&gt;
+</code></pre>
+<pre><code>             0   1</code></pre>
+<p>18 and Above 497 281 Under 18 52 61</p>
+<pre><code>
+
+
+&lt;!-- rnb-output-end --&gt;
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxucHJvcC50YWJsZSh0YWJsZShkYXRhJEFnZV9Hcm91cCwgZGF0YSRTdXJ2aXZlZCksIG1hcmdpbiA9IDEpICAjIOiuoeeul+W5tOm+hOWIhue7hOWtmOa0u+eOh1xuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+prop.table(table(data$Age_Group, data$Survived), margin = 1)  # 计算年龄分组存活率</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiICAgICAgICAgICAgICBcbiAgICAgICAgICAgICAgICAgICAgICAgMCAgICAgICAgIDFcbiAgMTggYW5kIEFib3ZlIDAuNjM4ODE3NSAwLjM2MTE4MjVcbiAgVW5kZXIgMTggICAgIDAuNDYwMTc3MCAwLjUzOTgyMzBcbiJ9 --&gt;
+</code></pre>
+<pre><code>                   0         1</code></pre>
+<p>18 and Above 0.6388175 0.3611825 Under 18 0.4601770 0.5398230</p>
+<pre><code>
+
+
+&lt;!-- rnb-output-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyDliIbnsbvliIbmnpAgLSDlhYTlvJ/lp5Dlprkv6YWN5YG25pWw6YeP5a+55a2Y5rS75oOF5Ya155qE5b2x5ZONXG50YWJsZShkYXRhJFNpYlNwLCBkYXRhJFN1cnZpdmVkKVxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+# 分类分析 - 兄弟姐妹/配偶数量对存活情况的影响
 table(data$SibSp, data$Survived)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiICAgXG4gICAgICAwICAgMVxuICAwIDM5OCAyMTBcbiAgMSAgOTcgMTEyXG4gIDIgIDE1ICAxM1xuICAzICAxMiAgIDRcbiAgNCAgMTUgICAzXG4gIDUgICA1ICAgMFxuICA4ICAgNyAgIDBcbiJ9 -->
-<pre><code>   
-      0   1
-  0 398 210
-  1  97 112
-  2  15  13
-  3  12   4
-  4  15   3
-  5   5   0
-  8   7   0</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucHJvcC50YWJsZSh0YWJsZShkYXRhJFNpYlNwLCBkYXRhJFN1cnZpdmVkKSwgbWFyZ2luID0gMSkgICMg6K6h566X5YWE5byf5aeQ5aa5L+mFjeWBtuaVsOmHj+WtmOa0u+eOh1xuYGBgIn0= -->
-<pre class="r"><code>prop.table(table(data$SibSp, data$Survived), margin = 1)  # 计算兄弟姐妹/配偶数量存活率</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiICAgXG4gICAgICAgICAgICAwICAgICAgICAgMVxuICAwIDAuNjU0NjA1MyAwLjM0NTM5NDdcbiAgMSAwLjQ2NDExNDggMC41MzU4ODUyXG4gIDIgMC41MzU3MTQzIDAuNDY0Mjg1N1xuICAzIDAuNzUwMDAwMCAwLjI1MDAwMDBcbiAgNCAwLjgzMzMzMzMgMC4xNjY2NjY3XG4gIDUgMS4wMDAwMDAwIDAuMDAwMDAwMFxuICA4IDEuMDAwMDAwMCAwLjAwMDAwMDBcbiJ9 -->
-<pre><code>   
-            0         1
-  0 0.6546053 0.3453947
-  1 0.4641148 0.5358852
-  2 0.5357143 0.4642857
-  3 0.7500000 0.2500000
-  4 0.8333333 0.1666667
-  5 1.0000000 0.0000000
-  8 1.0000000 0.0000000</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyDliIbnsbvliIbmnpAgLSDoiLnnpajku7fmoLzlr7nlrZjmtLvmg4XlhrXnmoTlvbHlk41cbiMg5Y+v5Lul5qC55o2u5YW35L2T6ZyA5rGC6L+b6KGM5Lu35qC85YiG57uE77yM6L+Z6YeM5Lul5Lit5L2N5pWw5Li655WM6L+b6KGM5YiG57uEXG5kYXRhJEZhcmVfR3JvdXAgPC0gaWZlbHNlKGRhdGEkRmFyZSA8IG1lZGlhbihkYXRhJEZhcmUpLCBcIkxvdyBGYXJlXCIsIFwiSGlnaCBGYXJlXCIpXG50YWJsZShkYXRhJEZhcmVfR3JvdXAsIGRhdGEkU3Vydml2ZWQpXG5gYGAifQ== -->
-<pre class="r"><code># 分类分析 - 船票价格对存活情况的影响
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiICAgXG4gICAgICAwICAgMVxuICAwIDM5OCAyMTBcbiAgMSAgOTcgMTEyXG4gIDIgIDE1ICAxM1xuICAzICAxMiAgIDRcbiAgNCAgMTUgICAzXG4gIDUgICA1ICAgMFxuICA4ICAgNyAgIDBcbiJ9 --&gt;
+</code></pre>
+<pre><code>  0   1</code></pre>
+<p>0 398 210 1 97 112 2 15 13 3 12 4 4 15 3 5 5 0 8 7 0</p>
+<pre><code>
+
+
+&lt;!-- rnb-output-end --&gt;
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxucHJvcC50YWJsZSh0YWJsZShkYXRhJFNpYlNwLCBkYXRhJFN1cnZpdmVkKSwgbWFyZ2luID0gMSkgICMg6K6h566X5YWE5byf5aeQ5aa5L+mFjeWBtuaVsOmHj+WtmOa0u+eOh1xuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+prop.table(table(data$SibSp, data$Survived), margin = 1)  # 计算兄弟姐妹/配偶数量存活率</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiICAgXG4gICAgICAgICAgICAwICAgICAgICAgMVxuICAwIDAuNjU0NjA1MyAwLjM0NTM5NDdcbiAgMSAwLjQ2NDExNDggMC41MzU4ODUyXG4gIDIgMC41MzU3MTQzIDAuNDY0Mjg1N1xuICAzIDAuNzUwMDAwMCAwLjI1MDAwMDBcbiAgNCAwLjgzMzMzMzMgMC4xNjY2NjY3XG4gIDUgMS4wMDAwMDAwIDAuMDAwMDAwMFxuICA4IDEuMDAwMDAwMCAwLjAwMDAwMDBcbiJ9 --&gt;
+</code></pre>
+<pre><code>        0         1</code></pre>
+<p>0 0.6546053 0.3453947 1 0.4641148 0.5358852 2 0.5357143 0.4642857 3
+0.7500000 0.2500000 4 0.8333333 0.1666667 5 1.0000000 0.0000000 8
+1.0000000 0.0000000</p>
+<pre><code>
+
+
+&lt;!-- rnb-output-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyDliIbnsbvliIbmnpAgLSDoiLnnpajku7fmoLzlr7nlrZjmtLvmg4XlhrXnmoTlvbHlk41cbiMg5Y+v5Lul5qC55o2u5YW35L2T6ZyA5rGC6L+b6KGM5Lu35qC85YiG57uE77yM6L+Z6YeM5Lul5Lit5L2N5pWw5Li655WM6L+b6KGM5YiG57uEXG5kYXRhJEZhcmVfR3JvdXAgPC0gaWZlbHNlKGRhdGEkRmFyZSA8IG1lZGlhbihkYXRhJEZhcmUpLCBcXExvdyBGYXJlXFwsIFxcSGlnaCBGYXJlXFwpXG50YWJsZShkYXRhJEZhcmVfR3JvdXAsIGRhdGEkU3Vydml2ZWQpXG5gYGBcbmBgYCJ9 --&gt;
+
+```r
+```r
+# 分类分析 - 船票价格对存活情况的影响
 # 可以根据具体需求进行价格分组，这里以中位数为界进行分组
-data$Fare_Group &lt;- ifelse(data$Fare &lt; median(data$Fare), &quot;Low Fare&quot;, &quot;High Fare&quot;)
+data$Fare_Group &lt;- ifelse(data$Fare &lt; median(data$Fare), \Low Fare\, \High Fare\)
 table(data$Fare_Group, data$Survived)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiICAgICAgICAgICBcbiAgICAgICAgICAgICAgMCAgIDFcbiAgSGlnaCBGYXJlIDIyMCAyMzFcbiAgTG93IEZhcmUgIDMyOSAxMTFcbiJ9 -->
-<pre><code>           
-              0   1
-  High Fare 220 231
-  Low Fare  329 111</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucHJvcC50YWJsZSh0YWJsZShkYXRhJEZhcmVfR3JvdXAsIGRhdGEkU3Vydml2ZWQpLCBtYXJnaW4gPSAxKSAgIyDorqHnrpfoiLnnpajku7fmoLzliIbnu4TlrZjmtLvnjodcbmBgYCJ9 -->
-<pre class="r"><code>prop.table(table(data$Fare_Group, data$Survived), margin = 1)  # 计算船票价格分组存活率</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiICAgICAgICAgICBcbiAgICAgICAgICAgICAgICAgICAgMCAgICAgICAgIDFcbiAgSGlnaCBGYXJlIDAuNDg3ODA0OSAwLjUxMjE5NTFcbiAgTG93IEZhcmUgIDAuNzQ3NzI3MyAwLjI1MjI3MjdcbiJ9 -->
-<pre><code>           
-                    0         1
-  High Fare 0.4878049 0.5121951
-  Low Fare  0.7477273 0.2522727</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyDliIbnsbvliIbmnpAgLSDnmbvoiLnmuK/lj6Plr7nlrZjmtLvmg4XlhrXnmoTlvbHlk41cbnRhYmxlKGRhdGEkRW1iYXJrZWQsIGRhdGEkU3Vydml2ZWQpXG5gYGAifQ== -->
-<pre class="r"><code># 分类分析 - 登船港口对存活情况的影响
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiICAgICAgICAgICBcbiAgICAgICAgICAgICAgMCAgIDFcbiAgSGlnaCBGYXJlIDIyMCAyMzFcbiAgTG93IEZhcmUgIDMyOSAxMTFcbiJ9 --&gt;
+</code></pre>
+<pre><code>          0   1</code></pre>
+<p>High Fare 220 231 Low Fare 329 111</p>
+<pre><code>
+
+
+&lt;!-- rnb-output-end --&gt;
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxucHJvcC50YWJsZSh0YWJsZShkYXRhJEZhcmVfR3JvdXAsIGRhdGEkU3Vydml2ZWQpLCBtYXJnaW4gPSAxKSAgIyDorqHnrpfoiLnnpajku7fmoLzliIbnu4TlrZjmtLvnjodcbmBgYFxuYGBgIn0= --&gt;
+
+```r
+```r
+prop.table(table(data$Fare_Group, data$Survived), margin = 1)  # 计算船票价格分组存活率</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiICAgICAgICAgICBcbiAgICAgICAgICAgICAgICAgICAgMCAgICAgICAgIDFcbiAgSGlnaCBGYXJlIDAuNDg3ODA0OSAwLjUxMjE5NTFcbiAgTG93IEZhcmUgIDAuNzQ3NzI3MyAwLjI1MjI3MjdcbiJ9 --&gt;
+</code></pre>
+<pre><code>                0         1</code></pre>
+<p>High Fare 0.4878049 0.5121951 Low Fare 0.7477273 0.2522727</p>
+<pre><code>
+
+
+&lt;!-- rnb-output-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyDliIbnsbvliIbmnpAgLSDnmbvoiLnmuK/lj6Plr7nlrZjmtLvmg4XlhrXnmoTlvbHlk41cbnRhYmxlKGRhdGEkRW1iYXJrZWQsIGRhdGEkU3Vydml2ZWQpXG5gYGBcbmBgYCJ9 --&gt;
+
+```r
+```r
+# 分类分析 - 登船港口对存活情况的影响
 table(data$Embarked, data$Survived)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiICAgXG4gICAgICAwICAgMVxuICBDICA3NSAgOTNcbiAgUSAgNDcgIDMwXG4gIFMgNDI3IDIxN1xuIn0= -->
-<pre><code>   
-      0   1
-  C  75  93
-  Q  47  30
-  S 427 217</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucHJvcC50YWJsZSh0YWJsZShkYXRhJEVtYmFya2VkLCBkYXRhJFN1cnZpdmVkKSwgbWFyZ2luID0gMSkgICMg6K6h566X55m76Ii55riv5Y+j5a2Y5rS7546HXG5gYGAifQ== -->
-<pre class="r"><code>prop.table(table(data$Embarked, data$Survived), margin = 1)  # 计算登船港口存活率</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiICAgXG4gICAgICAgICAgICAwICAgICAgICAgMVxuICBDIDAuNDQ2NDI4NiAwLjU1MzU3MTRcbiAgUSAwLjYxMDM4OTYgMC4zODk2MTA0XG4gIFMgMC42NjMwNDM1IDAuMzM2OTU2NVxuIn0= -->
-<pre><code>   
-            0         1
-  C 0.4464286 0.5535714
-  Q 0.6103896 0.3896104
-  S 0.6630435 0.3369565</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiICAgXG4gICAgICAwICAgMVxuICBDICA3NSAgOTNcbiAgUSAgNDcgIDMwXG4gIFMgNDI3IDIxN1xuIn0= --&gt;
+</code></pre>
+<pre><code>  0   1</code></pre>
+<p>C 75 93 Q 47 30 S 427 217</p>
+<pre><code>
+
+
+&lt;!-- rnb-output-end --&gt;
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxucHJvcC50YWJsZSh0YWJsZShkYXRhJEVtYmFya2VkLCBkYXRhJFN1cnZpdmVkKSwgbWFyZ2luID0gMSkgICMg6K6h566X55m76Ii55riv5Y+j5a2Y5rS7546HXG5gYGBcbmBgYCJ9 --&gt;
+
+```r
+```r
+prop.table(table(data$Embarked, data$Survived), margin = 1)  # 计算登船港口存活率</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiICAgXG4gICAgICAgICAgICAwICAgICAgICAgMVxuICBDIDAuNDQ2NDI4NiAwLjU1MzU3MTRcbiAgUSAwLjYxMDM4OTYgMC4zODk2MTA0XG4gIFMgMC42NjMwNDM1IDAuMzM2OTU2NVxuIn0= --&gt;
+</code></pre>
+<pre><code>        0         1</code></pre>
+<p>C 0.4464286 0.5535714 Q 0.6103896 0.3896104 S 0.6630435 0.3369565
+```</p>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -2072,7 +2328,7 @@ run any R code chunks. Instead, the output of the chunk when it was last
 run in the editor is displayed.</p>
 <!-- rnb-text-end -->
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpUaGlzIGlzIGFuIFtSIE1hcmtkb3duXShodHRwOi8vcm1hcmtkb3duLnJzdHVkaW8uY29tKSBOb3RlYm9vay4gV2hlbiB5b3UgZXhlY3V0ZSBjb2RlIHdpdGhpbiB0aGUgbm90ZWJvb2ssIHRoZSByZXN1bHRzIGFwcGVhciBiZW5lYXRoIHRoZSBjb2RlLiANCg0KVHJ5IGV4ZWN1dGluZyB0aGlzIGNodW5rIGJ5IGNsaWNraW5nIHRoZSAqUnVuKiBidXR0b24gd2l0aGluIHRoZSBjaHVuayBvciBieSBwbGFjaW5nIHlvdXIgY3Vyc29yIGluc2lkZSBpdCBhbmQgcHJlc3NpbmcgKkN0cmwrU2hpZnQrRW50ZXIqLiANCg0KYGBge3J9DQojIOWvvOWFpeW/heimgeeahOWMhQ0KbGlicmFyeShjYXJldCkNCmxpYnJhcnkocFJPQykNCmBgYA0KDQpgYGB7ciBzdGVwMDF9DQojIOWvvOWFpeaVsOaNrg0KZGF0YSA8LSByZWFkLmNzdigidGl0YW5pYy5jc3YiKQ0KYGBgDQoNCmBgYHtyIHN0ZXAwMn0NCiMg5pWw5o2u5YiG5p6Q5ZKM57uT6K66DQpzdW1tYXJ5KGRhdGEpICAjIOafpeeci+aVsOaNruaRmOimgee7n+iuoeS/oeaBrw0KdGFibGUoZGF0YSRTdXJ2aXZlZCkgICMg57uf6K6h5a2Y5rS75ZKM5q275Lqh5Lq65pWwDQpgYGANCg0KYGBge3Igc3RlcDAzfQ0KIyDmlbDmja7pooTlpITnkIYNCiMg5aSE55CG57y65aSx5YC8DQpkYXRhJEFnZVtpcy5uYShkYXRhJEFnZSldIDwtIG1lYW4oZGF0YSRBZ2UsIG5hLnJtID0gVFJVRSkgICMg5L2/55So5bmz5Z2H5YC85aGr5YWF5bm06b6E55qE57y65aSx5YC8DQpgYGANCg0KYGBge3Igc3RlcDA0fQ0KIyDnibnlvoHpgInmi6nlkozovazmjaINCmRhdGEgPC0gZGF0YVssIGMoIlN1cnZpdmVkIiwgIlBjbGFzcyIsICJTZXgiLCAiQWdlIiwgIlNpYlNwIiwgIkZhcmUiLCAiRW1iYXJrZWQiKV0NCmRhdGEkU2V4IDwtIGFzLmZhY3RvcihkYXRhJFNleCkNCmRhdGEkRW1iYXJrZWQgPC0gYXMuY2hhcmFjdGVyKGRhdGEkRW1iYXJrZWQpICAjIOWwhkVtYmFya2Vk6L2s5o2i5Li65a2X56ym5Z6LDQojIOWcqOiuree7g+aVsOaNruS4reaMh+WumkVtYmFya2Vk55qE5rC05bmzDQpkYXRhJEVtYmFya2VkIDwtIGZhY3RvcihkYXRhJEVtYmFya2VkLCBsZXZlbHMgPSBjKCJDIiwgIlEiLCAiUyIpKQ0KYGBgDQoNCmBgYHtyfQ0KIyDmlbDmja7lu7rmqKHlj4rmqKHlnovotKjph4/or4TkvLANCnNldC5zZWVkKDEyMykNCnNwbGl0IDwtIGNyZWF0ZURhdGFQYXJ0aXRpb24oZGF0YSRTdXJ2aXZlZCwgcCA9IDAuNywgbGlzdCA9IEZBTFNFKSAgIyDkvb/nlKgnY2FyZXQn5YyF6L+b6KGM5pWw5o2u5YiS5YiGDQp0cmFpbl9kYXRhIDwtIGRhdGFbc3BsaXQsIF0NCnRlc3RfZGF0YSA8LSBkYXRhWy1zcGxpdCwgXQ0KYGBgDQoNCmBgYHtyfQ0KIyDlu7rnq4vpooTmtYvmqKHlnovvvIjpgLvovpHlm57lvZLvvIkNCm1vZGVsIDwtIGdsbShTdXJ2aXZlZCB+IC4sIGRhdGEgPSB0cmFpbl9kYXRhLCBmYW1pbHkgPSBiaW5vbWlhbCkNCnN1bW1hcnkobW9kZWwpDQpgYGANCmBgYHtyfQ0KIyDmqKHlnovor4TkvLANCnByZWQgPC0gcHJlZGljdChtb2RlbCwgbmV3ZGF0YSA9IHRlc3RfZGF0YSwgdHlwZSA9ICJyZXNwb25zZSIpDQphdWMgPC0gcm9jKHRlc3RfZGF0YSRTdXJ2aXZlZCwgcHJlZCkNCmF1YyRhdWMNCg0KIyBBVUPnmoTlj5blgLzojIPlm7TlnKgw5YiwMeS5i+mXtO+8jOihqOekuuaooeWei+Wvueato+i0n+agt+acrOeahOWIhuexu+iDveWKm+OAgkFVQ+WAvOi2iuaOpei/kTHvvIzooajnpLrmqKHlnovnmoTliIbnsbvog73lipvotorlpb3vvJvogIxBVUPlgLzmjqXov5EwLjXvvIzliJnor7TmmI7mqKHlnovnmoTliIbnsbvog73lipvovoPlt67vvIzln7rmnKznrYnlkIzkuo7pmo/mnLrnjJzmtYvjgIINCiMgQVVD55qE5YC85Li6MC44NDnvvIzov5nmhI/lkbPnnYDor6XmqKHlnovlhbfmnInnm7jlr7novoPlpb3nmoTliIbnsbvog73lipvjgILpgJrluLjvvIxBVUPlpKfkuo4wLjjooqvorqTkuLrmmK/kuIDkuKrlvojlpb3nmoTmqKHlnovmgKfog73mjIfmoIfjgIINCmBgYA0KYGBge3J9DQojIOWbnuetlOmXrumimO+8muKAnOS7gOS5iOagt+eahOS6uuabtOacieWPr+iDveWtmOa0u+S4i+adpe+8n+KAnQ0KDQojIOWIhuaekOaAp+WIq+WvueWtmOa0u+eahOW9seWTjQ0KdGFibGUoZGF0YSRTZXgsIGRhdGEkU3Vydml2ZWQpDQpwcm9wLnRhYmxlKHRhYmxlKGRhdGEkU2V4LCBkYXRhJFN1cnZpdmVkKSwgbWFyZ2luID0gMSkgICMg6K6h566X5oCn5Yir5a2Y5rS7546HDQoNCiMg6KGo5qC85Lit55qE5YiX6KGo56S65YiG57G757uT5p6c77yM5YW25LitMOWIl+ihqOekuuacquWtmOa0u++8jDHliJfooajnpLrlrZjmtLvjgIINCiMg5qC55o2u6K+l5pWw5o2u77yM5aWz5oCn55qE5a2Y5rS7546H5piO5pi+6auY5LqO55S35oCn77yM5Zug5Li65aWz5oCn5a2Y5rS7546H57qm5Li6NzQuMiXvvIzogIznlLfmgKflrZjmtLvnjofku4XnuqbkuLoxOC45JeOAgg0KDQpgYGANCg0KYGBge3J9DQojIOWIhuaekOekvuS8mue7j+a1jumYtue6p+WvueWtmOa0u+eahOW9seWTjQ0KdGFibGUoZGF0YSRQY2xhc3MsIGRhdGEkU3Vydml2ZWQpDQpwcm9wLnRhYmxlKHRhYmxlKGRhdGEkUGNsYXNzLCBkYXRhJFN1cnZpdmVkKSwgbWFyZ2luID0gMSkgICMg6K6h566X56S+5Lya57uP5rWO6Zi257qn5a2Y5rS7546HDQoNCiMg5qC55o2u6KGo5qC85Lit55qE5pWw5o2u77yM5oiR5Lus5Y+v5Lul5b6X5Ye65Lul5LiL57uT6K6677yaDQoNCiMg5ZyoMee6p+ekvuS8mue7j+a1jumYtue6p+S4re+8jDgw5Lq65pyq5a2Y5rS777yMMTM25Lq65a2Y5rS744CCDQojIOWcqDLnuqfnpL7kvJrnu4/mtY7pmLbnuqfkuK3vvIw5N+S6uuacquWtmOa0u++8jDg35Lq65a2Y5rS744CCDQojIOWcqDPnuqfnpL7kvJrnu4/mtY7pmLbnuqfkuK3vvIwzNzLkurrmnKrlrZjmtLvvvIwxMTnkurrlrZjmtLvjgIINCg0KIyDmoLnmja7or6XmlbDmja7vvIznpL7kvJrnu4/mtY7pmLbnuqfotorpq5jvvIzlrZjmtLvnjofotorpq5jjgILkvovlpoLvvIzlnKgx57qn56S+5Lya57uP5rWO6Zi257qn5Lit77yM5a2Y5rS7546H57qm5Li6NjIuOSXvvIzogIzlnKgz57qn56S+5Lya57uP5rWO6Zi257qn5Lit77yM5a2Y5rS7546H5LuF57qm5Li6MjQuMiXjgIINCmBgYA0KYGBge3J9DQojIOWIhuexu+WIhuaekCAtIOW5tOm+hOWvueWtmOa0u+aDheWGteeahOW9seWTjQ0KIyDlj6/ku6XmoLnmja7lhbfkvZPpnIDmsYLov5vooYzlubTpvoTliIbnu4TvvIzov5nph4zku6UxOOWygeS7peS4i+WSjDE45bKB5Lul5LiK5Li65L6LDQpkYXRhJEFnZV9Hcm91cCA8LSBpZmVsc2UoZGF0YSRBZ2UgPCAxOCwgIlVuZGVyIDE4IiwgIjE4IGFuZCBBYm92ZSIpDQp0YWJsZShkYXRhJEFnZV9Hcm91cCwgZGF0YSRTdXJ2aXZlZCkNCnByb3AudGFibGUodGFibGUoZGF0YSRBZ2VfR3JvdXAsIGRhdGEkU3Vydml2ZWQpLCBtYXJnaW4gPSAxKSAgIyDorqHnrpflubTpvoTliIbnu4TlrZjmtLvnjocNCg0KIyDlkIznkIbvvIzlubTovbvnmoTmtLvvvIzogIHnmoTmrbsNCmBgYA0KDQpgYGB7cn0NCiMg5YiG57G75YiG5p6QIC0g5YWE5byf5aeQ5aa5L+mFjeWBtuaVsOmHj+WvueWtmOa0u+aDheWGteeahOW9seWTjQ0KdGFibGUoZGF0YSRTaWJTcCwgZGF0YSRTdXJ2aXZlZCkNCnByb3AudGFibGUodGFibGUoZGF0YSRTaWJTcCwgZGF0YSRTdXJ2aXZlZCksIG1hcmdpbiA9IDEpICAjIOiuoeeul+WFhOW8n+WnkOWmuS/phY3lgbbmlbDph4/lrZjmtLvnjocNCg0KIyDnrKzkuIDooYzooajnpLoi5YWE5byf5aeQ5aa5L+mFjeWBtuaVsOmHjyLkuLow55qE57uE5Lit5pyJMzk45Lq65pyq5a2Y5rS777yMMjEw5Lq65a2Y5rS777yb56ys5LqM6KGM6KGo56S6IuWFhOW8n+WnkOWmuS/phY3lgbbmlbDph48i5Li6MeeahOe7hOS4reaciTk35Lq65pyq5a2Y5rS777yMMTEy5Lq65a2Y5rS777yM5L6d5q2k57G75o6o44CCDQoNCiMg5pyJMSwy5Liq5YWE5byf5aeQ5aa555qE5rS777yM5YW25LuW5q27DQpgYGANCmBgYHtyfQ0KIyDliIbnsbvliIbmnpAgLSDoiLnnpajku7fmoLzlr7nlrZjmtLvmg4XlhrXnmoTlvbHlk40NCiMg5Y+v5Lul5qC55o2u5YW35L2T6ZyA5rGC6L+b6KGM5Lu35qC85YiG57uE77yM6L+Z6YeM5Lul5Lit5L2N5pWw5Li655WM6L+b6KGM5YiG57uEDQpkYXRhJEZhcmVfR3JvdXAgPC0gaWZlbHNlKGRhdGEkRmFyZSA8IG1lZGlhbihkYXRhJEZhcmUpLCAiTG93IEZhcmUiLCAiSGlnaCBGYXJlIikNCnRhYmxlKGRhdGEkRmFyZV9Hcm91cCwgZGF0YSRTdXJ2aXZlZCkNCnByb3AudGFibGUodGFibGUoZGF0YSRGYXJlX0dyb3VwLCBkYXRhJFN1cnZpdmVkKSwgbWFyZ2luID0gMSkgICMg6K6h566X6Ii556Wo5Lu35qC85YiG57uE5a2Y5rS7546HDQoNCiMg6Ii556Wo6LS155qE5rS777yM5L6/5a6c55qE5q27DQpgYGANCmBgYHtyfQ0KIyDliIbnsbvliIbmnpAgLSDnmbvoiLnmuK/lj6Plr7nlrZjmtLvmg4XlhrXnmoTlvbHlk40NCnRhYmxlKGRhdGEkRW1iYXJrZWQsIGRhdGEkU3Vydml2ZWQpDQpwcm9wLnRhYmxlKHRhYmxlKGRhdGEkRW1iYXJrZWQsIGRhdGEkU3Vydml2ZWQpLCBtYXJnaW4gPSAxKSAgIyDorqHnrpfnmbvoiLnmuK/lj6PlrZjmtLvnjocNCg0KIyDmuK/lj6ND5rS7IFHopoHmrbvkuI3mtLsgU+atuw0KYGBgDQoNCkFkZCBhIG5ldyBjaHVuayBieSBjbGlja2luZyB0aGUgKkluc2VydCBDaHVuayogYnV0dG9uIG9uIHRoZSB0b29sYmFyIG9yIGJ5IHByZXNzaW5nICpDdHJsK0FsdCtJKi4NCg0KV2hlbiB5b3Ugc2F2ZSB0aGUgbm90ZWJvb2ssIGFuIEhUTUwgZmlsZSBjb250YWluaW5nIHRoZSBjb2RlIGFuZCBvdXRwdXQgd2lsbCBiZSBzYXZlZCBhbG9uZ3NpZGUgaXQgKGNsaWNrIHRoZSAqUHJldmlldyogYnV0dG9uIG9yIHByZXNzICpDdHJsK1NoaWZ0K0sqIHRvIHByZXZpZXcgdGhlIEhUTUwgZmlsZSkuDQoNClRoZSBwcmV2aWV3IHNob3dzIHlvdSBhIHJlbmRlcmVkIEhUTUwgY29weSBvZiB0aGUgY29udGVudHMgb2YgdGhlIGVkaXRvci4gQ29uc2VxdWVudGx5LCB1bmxpa2UgKktuaXQqLCAqUHJldmlldyogZG9lcyBub3QgcnVuIGFueSBSIGNvZGUgY2h1bmtzLiBJbnN0ZWFkLCB0aGUgb3V0cHV0IG9mIHRoZSBjaHVuayB3aGVuIGl0IHdhcyBsYXN0IHJ1biBpbiB0aGUgZWRpdG9yIGlzIGRpc3BsYXllZC4NCg==</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogImZpbmFsLXRpdGFuaWMiDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpUaGlzIGlzIGFuIFtSIE1hcmtkb3duXShodHRwOi8vcm1hcmtkb3duLnJzdHVkaW8uY29tKSBOb3RlYm9vay4gV2hlbiB5b3UgZXhlY3V0ZSBjb2RlIHdpdGhpbiB0aGUgbm90ZWJvb2ssIHRoZSByZXN1bHRzIGFwcGVhciBiZW5lYXRoIHRoZSBjb2RlLiANCg0KVHJ5IGV4ZWN1dGluZyB0aGlzIGNodW5rIGJ5IGNsaWNraW5nIHRoZSAqUnVuKiBidXR0b24gd2l0aGluIHRoZSBjaHVuayBvciBieSBwbGFjaW5nIHlvdXIgY3Vyc29yIGluc2lkZSBpdCBhbmQgcHJlc3NpbmcgKkN0cmwrU2hpZnQrRW50ZXIqLiANCg0KYGBge3J9DQojIOWvvOWFpeW/heimgeeahOWMhQ0KbGlicmFyeShjYXJldCkNCmxpYnJhcnkocFJPQykNCmBgYA0KDQpgYGB7ciBzdGVwMDF9DQojIOWvvOWFpeaVsOaNrg0KZGF0YSA8LSByZWFkLmNzdigidGl0YW5pYy5jc3YiKQ0KYGBgDQoNCmBgYHtyIHN0ZXAwMn0NCiMg5pWw5o2u5YiG5p6Q5ZKM57uT6K66DQpzdW1tYXJ5KGRhdGEpICAjIOafpeeci+aVsOaNruaRmOimgee7n+iuoeS/oeaBrw0KdGFibGUoZGF0YSRTdXJ2aXZlZCkgICMg57uf6K6h5a2Y5rS75ZKM5q275Lqh5Lq65pWwDQpgYGANCg0KYGBge3Igc3RlcDAzfQ0KIyDmlbDmja7pooTlpITnkIYNCiMg5aSE55CG57y65aSx5YC8DQpkYXRhJEFnZVtpcy5uYShkYXRhJEFnZSldIDwtIG1lYW4oZGF0YSRBZ2UsIG5hLnJtID0gVFJVRSkgICMg5L2/55So5bmz5Z2H5YC85aGr5YWF5bm06b6E55qE57y65aSx5YC8DQpgYGANCg0KYGBge3Igc3RlcDA0fQ0KIyDnibnlvoHpgInmi6nlkozovazmjaINCmRhdGEgPC0gZGF0YVssIGMoIlN1cnZpdmVkIiwgIlBjbGFzcyIsICJTZXgiLCAiQWdlIiwgIlNpYlNwIiwgIkZhcmUiLCAiRW1iYXJrZWQiKV0NCmRhdGEkU2V4IDwtIGFzLmZhY3RvcihkYXRhJFNleCkNCmRhdGEkRW1iYXJrZWQgPC0gYXMuY2hhcmFjdGVyKGRhdGEkRW1iYXJrZWQpICAjIOWwhkVtYmFya2Vk6L2s5o2i5Li65a2X56ym5Z6LDQojIOWcqOiuree7g+aVsOaNruS4reaMh+WumkVtYmFya2Vk55qE5rC05bmzDQpkYXRhJEVtYmFya2VkIDwtIGZhY3RvcihkYXRhJEVtYmFya2VkLCBsZXZlbHMgPSBjKCJDIiwgIlEiLCAiUyIpKQ0KYGBgDQoNCmBgYHtyfQ0KIyDmlbDmja7lu7rmqKHlj4rmqKHlnovotKjph4/or4TkvLANCnNldC5zZWVkKDEyMykNCnNwbGl0IDwtIGNyZWF0ZURhdGFQYXJ0aXRpb24oZGF0YSRTdXJ2aXZlZCwgcCA9IDAuNywgbGlzdCA9IEZBTFNFKSAgIyDkvb/nlKgnY2FyZXQn5YyF6L+b6KGM5pWw5o2u5YiS5YiGDQp0cmFpbl9kYXRhIDwtIGRhdGFbc3BsaXQsIF0NCnRlc3RfZGF0YSA8LSBkYXRhWy1zcGxpdCwgXQ0KYGBgDQoNCmBgYHtyfQ0KIyDlu7rnq4vpooTmtYvmqKHlnovvvIjpgLvovpHlm57lvZLvvIkNCm1vZGVsIDwtIGdsbShTdXJ2aXZlZCB+IC4sIGRhdGEgPSB0cmFpbl9kYXRhLCBmYW1pbHkgPSBiaW5vbWlhbCkNCnN1bW1hcnkobW9kZWwpDQpgYGANCmBgYHtyfQ0KIyDmqKHlnovor4TkvLANCnByZWQgPC0gcHJlZGljdChtb2RlbCwgbmV3ZGF0YSA9IHRlc3RfZGF0YSwgdHlwZSA9ICJyZXNwb25zZSIpDQphdWMgPC0gcm9jKHRlc3RfZGF0YSRTdXJ2aXZlZCwgcHJlZCkNCmF1YyRhdWMNCg0KIyBBVUPnmoTlj5blgLzojIPlm7TlnKgw5YiwMeS5i+mXtO+8jOihqOekuuaooeWei+Wvueato+i0n+agt+acrOeahOWIhuexu+iDveWKm+OAgkFVQ+WAvOi2iuaOpei/kTHvvIzooajnpLrmqKHlnovnmoTliIbnsbvog73lipvotorlpb3vvJvogIxBVUPlgLzmjqXov5EwLjXvvIzliJnor7TmmI7mqKHlnovnmoTliIbnsbvog73lipvovoPlt67vvIzln7rmnKznrYnlkIzkuo7pmo/mnLrnjJzmtYvjgIINCiMgQVVD55qE5YC85Li6MC44NDnvvIzov5nmhI/lkbPnnYDor6XmqKHlnovlhbfmnInnm7jlr7novoPlpb3nmoTliIbnsbvog73lipvjgILpgJrluLjvvIxBVUPlpKfkuo4wLjjooqvorqTkuLrmmK/kuIDkuKrlvojlpb3nmoTmqKHlnovmgKfog73mjIfmoIfjgIINCmBgYA0KYGBge3J9DQojIOWbnuetlOmXrumimO+8muKAnOS7gOS5iOagt+eahOS6uuabtOacieWPr+iDveWtmOa0u+S4i+adpe+8n+KAnQ0KDQojIOWIhuaekOaAp+WIq+WvueWtmOa0u+eahOW9seWTjQ0KdGFibGUoZGF0YSRTZXgsIGRhdGEkU3Vydml2ZWQpDQpwcm9wLnRhYmxlKHRhYmxlKGRhdGEkU2V4LCBkYXRhJFN1cnZpdmVkKSwgbWFyZ2luID0gMSkgICMg6K6h566X5oCn5Yir5a2Y5rS7546HDQoNCiMg6KGo5qC85Lit55qE5YiX6KGo56S65YiG57G757uT5p6c77yM5YW25LitMOWIl+ihqOekuuacquWtmOa0u++8jDHliJfooajnpLrlrZjmtLvjgIINCiMg5qC55o2u6K+l5pWw5o2u77yM5aWz5oCn55qE5a2Y5rS7546H5piO5pi+6auY5LqO55S35oCn77yM5Zug5Li65aWz5oCn5a2Y5rS7546H57qm5Li6NzQuMiXvvIzogIznlLfmgKflrZjmtLvnjofku4XnuqbkuLoxOC45JeOAgg0KDQpgYGANCg0KYGBge3J9DQojIOWIhuaekOekvuS8mue7j+a1jumYtue6p+WvueWtmOa0u+eahOW9seWTjQ0KdGFibGUoZGF0YSRQY2xhc3MsIGRhdGEkU3Vydml2ZWQpDQpwcm9wLnRhYmxlKHRhYmxlKGRhdGEkUGNsYXNzLCBkYXRhJFN1cnZpdmVkKSwgbWFyZ2luID0gMSkgICMg6K6h566X56S+5Lya57uP5rWO6Zi257qn5a2Y5rS7546HDQoNCiMg5qC55o2u6KGo5qC85Lit55qE5pWw5o2u77yM5oiR5Lus5Y+v5Lul5b6X5Ye65Lul5LiL57uT6K6677yaDQoNCiMg5ZyoMee6p+ekvuS8mue7j+a1jumYtue6p+S4re+8jDgw5Lq65pyq5a2Y5rS777yMMTM25Lq65a2Y5rS744CCDQojIOWcqDLnuqfnpL7kvJrnu4/mtY7pmLbnuqfkuK3vvIw5N+S6uuacquWtmOa0u++8jDg35Lq65a2Y5rS744CCDQojIOWcqDPnuqfnpL7kvJrnu4/mtY7pmLbnuqfkuK3vvIwzNzLkurrmnKrlrZjmtLvvvIwxMTnkurrlrZjmtLvjgIINCg0KIyDmoLnmja7or6XmlbDmja7vvIznpL7kvJrnu4/mtY7pmLbnuqfotorpq5jvvIzlrZjmtLvnjofotorpq5jjgILkvovlpoLvvIzlnKgx57qn56S+5Lya57uP5rWO6Zi257qn5Lit77yM5a2Y5rS7546H57qm5Li6NjIuOSXvvIzogIzlnKgz57qn56S+5Lya57uP5rWO6Zi257qn5Lit77yM5a2Y5rS7546H5LuF57qm5Li6MjQuMiXjgIINCmBgYA0KYGBge3J9DQojIOWIhuexu+WIhuaekCAtIOW5tOm+hOWvueWtmOa0u+aDheWGteeahOW9seWTjQ0KIyDlj6/ku6XmoLnmja7lhbfkvZPpnIDmsYLov5vooYzlubTpvoTliIbnu4TvvIzov5nph4zku6UxOOWygeS7peS4i+WSjDE45bKB5Lul5LiK5Li65L6LDQpkYXRhJEFnZV9Hcm91cCA8LSBpZmVsc2UoZGF0YSRBZ2UgPCAxOCwgIlVuZGVyIDE4IiwgIjE4IGFuZCBBYm92ZSIpDQp0YWJsZShkYXRhJEFnZV9Hcm91cCwgZGF0YSRTdXJ2aXZlZCkNCnByb3AudGFibGUodGFibGUoZGF0YSRBZ2VfR3JvdXAsIGRhdGEkU3Vydml2ZWQpLCBtYXJnaW4gPSAxKSAgIyDorqHnrpflubTpvoTliIbnu4TlrZjmtLvnjocNCg0KIyDlkIznkIbvvIzlubTovbvnmoTmtLvvvIzogIHnmoTmrbsNCmBgYA0KDQpgYGB7cn0NCiMg5YiG57G75YiG5p6QIC0g5YWE5byf5aeQ5aa5L+mFjeWBtuaVsOmHj+WvueWtmOa0u+aDheWGteeahOW9seWTjQ0KdGFibGUoZGF0YSRTaWJTcCwgZGF0YSRTdXJ2aXZlZCkNCnByb3AudGFibGUodGFibGUoZGF0YSRTaWJTcCwgZGF0YSRTdXJ2aXZlZCksIG1hcmdpbiA9IDEpICAjIOiuoeeul+WFhOW8n+WnkOWmuS/phY3lgbbmlbDph4/lrZjmtLvnjocNCg0KIyDnrKzkuIDooYzooajnpLoi5YWE5byf5aeQ5aa5L+mFjeWBtuaVsOmHjyLkuLow55qE57uE5Lit5pyJMzk45Lq65pyq5a2Y5rS777yMMjEw5Lq65a2Y5rS777yb56ys5LqM6KGM6KGo56S6IuWFhOW8n+WnkOWmuS/phY3lgbbmlbDph48i5Li6MeeahOe7hOS4reaciTk35Lq65pyq5a2Y5rS777yMMTEy5Lq65a2Y5rS777yM5L6d5q2k57G75o6o44CCDQoNCiMg5pyJMSwy5Liq5YWE5byf5aeQ5aa555qE5rS777yM5YW25LuW5q27DQpgYGANCmBgYHtyfQ0KIyDliIbnsbvliIbmnpAgLSDoiLnnpajku7fmoLzlr7nlrZjmtLvmg4XlhrXnmoTlvbHlk40NCiMg5Y+v5Lul5qC55o2u5YW35L2T6ZyA5rGC6L+b6KGM5Lu35qC85YiG57uE77yM6L+Z6YeM5Lul5Lit5L2N5pWw5Li655WM6L+b6KGM5YiG57uEDQpkYXRhJEZhcmVfR3JvdXAgPC0gaWZlbHNlKGRhdGEkRmFyZSA8IG1lZGlhbihkYXRhJEZhcmUpLCAiTG93IEZhcmUiLCAiSGlnaCBGYXJlIikNCnRhYmxlKGRhdGEkRmFyZV9Hcm91cCwgZGF0YSRTdXJ2aXZlZCkNCnByb3AudGFibGUodGFibGUoZGF0YSRGYXJlX0dyb3VwLCBkYXRhJFN1cnZpdmVkKSwgbWFyZ2luID0gMSkgICMg6K6h566X6Ii556Wo5Lu35qC85YiG57uE5a2Y5rS7546HDQoNCiMg6Ii556Wo6LS155qE5rS777yM5L6/5a6c55qE5q27DQpgYGANCmBgYHtyfQ0KIyDliIbnsbvliIbmnpAgLSDnmbvoiLnmuK/lj6Plr7nlrZjmtLvmg4XlhrXnmoTlvbHlk40NCnRhYmxlKGRhdGEkRW1iYXJrZWQsIGRhdGEkU3Vydml2ZWQpDQpwcm9wLnRhYmxlKHRhYmxlKGRhdGEkRW1iYXJrZWQsIGRhdGEkU3Vydml2ZWQpLCBtYXJnaW4gPSAxKSAgIyDorqHnrpfnmbvoiLnmuK/lj6PlrZjmtLvnjocNCg0KIyDmuK/lj6ND5rS7IFHopoHmrbvkuI3mtLsgU+atuw0KYGBgDQoNCkFkZCBhIG5ldyBjaHVuayBieSBjbGlja2luZyB0aGUgKkluc2VydCBDaHVuayogYnV0dG9uIG9uIHRoZSB0b29sYmFyIG9yIGJ5IHByZXNzaW5nICpDdHJsK0FsdCtJKi4NCg0KV2hlbiB5b3Ugc2F2ZSB0aGUgbm90ZWJvb2ssIGFuIEhUTUwgZmlsZSBjb250YWluaW5nIHRoZSBjb2RlIGFuZCBvdXRwdXQgd2lsbCBiZSBzYXZlZCBhbG9uZ3NpZGUgaXQgKGNsaWNrIHRoZSAqUHJldmlldyogYnV0dG9uIG9yIHByZXNzICpDdHJsK1NoaWZ0K0sqIHRvIHByZXZpZXcgdGhlIEhUTUwgZmlsZSkuDQoNClRoZSBwcmV2aWV3IHNob3dzIHlvdSBhIHJlbmRlcmVkIEhUTUwgY29weSBvZiB0aGUgY29udGVudHMgb2YgdGhlIGVkaXRvci4gQ29uc2VxdWVudGx5LCB1bmxpa2UgKktuaXQqLCAqUHJldmlldyogZG9lcyBub3QgcnVuIGFueSBSIGNvZGUgY2h1bmtzLiBJbnN0ZWFkLCB0aGUgb3V0cHV0IG9mIHRoZSBjaHVuayB3aGVuIGl0IHdhcyBsYXN0IHJ1biBpbiB0aGUgZWRpdG9yIGlzIGRpc3BsYXllZC4NCg==</div>
 
 
 
