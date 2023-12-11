@@ -17,6 +17,8 @@ classoption: "hyperref,"
 # 加载需要的包
 library(dplyr)
 library(ggplot2)
+library(mice)
+library(caret)
 
 # 读取需要数据集
 edu <- read.csv("education.csv", stringsAsFactors = F)
@@ -28,11 +30,16 @@ str(edu)
 # 统计概要
 summary(edu)
 ```
+```{r}
+# 缺失值判断
+md.pattern(edu, rotate.names = T)
+```
 ```{r step5}
 # 数据预处理
 # 检测缺失值
 any(is.na(edu))
-
+```
+```{r}
 # 数据标准化
 # numeric_vars <- c("失业率", "高教总入学率")
 # edu[numeric_vars] <- scale(edu[numeric_vars])
@@ -125,6 +132,18 @@ enroll_model$coefficients
 (enroll_sum = summary(enroll_model))
 enroll_sum$coefficients
 ```
+```{r}
+# 诊断
+par(mfrow=c(2,2))
+plot(enroll_model) 
+# 4. qq残差图看出正态性不错的，在45度斜率的直线上
+# 1. Residuals vs Fitted（残差 vs 预测值）图：该图用来检查模型中的残差是否随着预测值的增加而呈现出某种模式或系统性的变化。如果残差在预测值上呈现出随机分布、无明显模式和规律，那么模型的拟合效果通常是良好的。不过，如果在图中发现明显的曲线形状、漏斗形状或者其他规律性模式，那可能意味着模型存在问题（如非线性关系、异方差性等）。
+
+# 2. Scale-Location（标准化残差的平方根 vs 预测值）图：该图用于诊断模型中的异方差性（即残差方差是否与预测值相关）。如果图中标准化残差的平方根在预测值上呈现出随机分布、无明显模式和规律，那么可以认为模型满足异方差性的假设。然而，如果图中出现明显的漏斗形状、梯形形状或其他模式，那可能表示模型存在异方差性，需要进一步调整模型。
+
+# 3. Residuals vs Leverage（残差 vs 杠杆值）图：该图用于识别数据点对回归模型的影响程度。在该图中，残差表示误差的大小，杠杆值表示数据点在自变量空间中的相对位置。如果数据点在图中具有高杠杆值，同时对应着较大的残差，那可能是一个“高杠杆点”或“杠杆杆点”，需进一步分析这些点是否对回归系数估计产生较大影响。
+```
+
 ```{r step8}
 # 使用相关性强的构建失业率的回归模型
 unemploy_related_col <- edu[, c(unemploy_related_idx, 29)]
@@ -134,3 +153,55 @@ unemploy_model$coefficients
 (unemploy_sum = summary(unemploy_model))
 unemploy_sum$coefficients
 ```
+```{r}
+# 数据划分
+set.seed(123)
+split <- createDataPartition(edu$Gross_Primary_Education_Enrollment, p = 0.7, list = F)
+train_data <- edu[split, ]
+test_data <- edu[-split, ]
+```
+```{r}
+# 利用car包
+library(car)
+```
+```{r}
+qqPlot(enroll_model, simulate = T)
+```
+```{r}
+residplot <- function(fit, nbreaks=10) {
+ z <- rstudent(fit)
+ hist(z, breaks=nbreaks, freq=FALSE,
+ xlab="Studentized Residual",
+ main="Distribution of Errors")
+ rug(jitter(z), col="brown")
+ curve(dnorm(x, mean=mean(z), sd=sd(z)),
+ add=TRUE, col="blue", lwd=2)
+ lines(density(z)$x, density(z)$y,
+ col="red", lwd=2, lty=2)
+ legend("topright",
+ legend = c( "Normal Curve", "Kernel Density Curve"),
+ lty=1:2, col=c("blue","red"), cex=.7)
+ }
+```
+```{r}
+residplot(enroll_model)
+# 出问题，均值不在0这
+```
+
+```{r}
+# 独立性
+durbinWatsonTest(enroll_model)
+# p值不显著，无自相关，但是这个lag表示每个数据都和后一个比较，适用于时间独立的数据
+```
+
+```{r}
+# 验证是否确实线性
+crPlots(enroll_model)
+```
+```{r}
+# 检验误差方差是否恒定
+ncvTest(enroll_model)
+# 不显著 -> 恒定
+spreadLevelPlot(enroll_model)
+```
+
