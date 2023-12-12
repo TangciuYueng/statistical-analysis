@@ -19,27 +19,29 @@ library(dplyr)
 library(ggplot2)
 library(mice)
 library(caret)
+library(car)
 
+rm(list = ls())
+```
+
+```{r step2}
 # 读取需要数据集
 edu <- read.csv("education.csv", stringsAsFactors = F)
-
-# 查看数据结构
-str(edu)
 ```
-```{r step2}
+
+```{r step3}
 # 统计概要
 summary(edu)
 ```
-```{r}
+
+```{r step4}
 # 缺失值判断
 md.pattern(edu, rotate.names = T)
-```
-```{r step5}
-# 数据预处理
-# 检测缺失值
 any(is.na(edu))
+# 可以看到没有缺失值
 ```
-```{r}
+
+```{r step5}
 # 数据标准化
 # numeric_vars <- c("失业率", "高教总入学率")
 # edu[numeric_vars] <- scale(edu[numeric_vars])
@@ -79,93 +81,76 @@ col_mapping <- c(
 )
 
 # 修改列名
-colnames(edu) <- col_mapping
-
-```
-```{r step4}
-# 参数值意味着不同的行数: 351, 325
-nrow(edu)
+edu2 <- edu
+colnames(edu2) <- col_mapping
 ```
 
-```{r step3}
+```{r step6}
 # 相关性分析
-
 require(corrplot)
 library(Hmisc)
 
-correlation <- cor(edu[, 4:29])
-symnum_res <- symnum(correlation)
-
-cor_1 <- rcorr(as.matrix(edu[, 4:29]))
-M <- cor_1$r
-p_mat <- cor_1$P
+cor <- rcorr(as.matrix(edu2[, 4:29]))
+M <- cor$r
+p_mat <- cor$P
 # tl.cex 调整字体大小
 # pch.cex 调整叉叉大小
 corrplot(M, type = "upper", order = "hclust", p.mat = p_mat, sig.level = 0.01, tl.cex = 0.7, pch.cex = 0.7)
 ```
-
-```{r}
-# 重读
-edu <- read.csv("education.csv", stringsAsFactors = F)
-```
-
-
-```{r step6}
-
-# 获取最后两列与其他列的相关系
-enroll <- cor(edu[, 28], edu[, c(-1, -2, -3, -28)])
-unemploy <- cor(edu[, 29], edu[, c(-1, -2, -3, -29)])
-
-# 设置阈值
-threshold <- 0.7
-
-# 获取强相关的列号
-(enroll_related_idx <- which(abs(enroll) > threshold))
-(unemploy_related_idx <- which(abs(unemploy) > threshold))
-```
 ```{r step7}
-# 使用相关性强的构建入学率的回归模型
-enroll_related_col <- edu[, c(enroll_related_idx, 28)]
+z <- data.frame(values = edu$Gross_Tertiary_Education_Enrollment)
 
-enroll_model <- lm(Gross_Tertiary_Education_Enrollment~., data = enroll_related_col)
-enroll_model$coefficients
-(enroll_sum = summary(enroll_model))
-enroll_sum$coefficients
-```
-```{r}
-# 诊断
-par(mfrow=c(2,2))
-plot(enroll_model) 
-# 4. qq残差图看出正态性不错的，在45度斜率的直线上
-# 1. Residuals vs Fitted（残差 vs 预测值）图：该图用来检查模型中的残差是否随着预测值的增加而呈现出某种模式或系统性的变化。如果残差在预测值上呈现出随机分布、无明显模式和规律，那么模型的拟合效果通常是良好的。不过，如果在图中发现明显的曲线形状、漏斗形状或者其他规律性模式，那可能意味着模型存在问题（如非线性关系、异方差性等）。
-
-# 2. Scale-Location（标准化残差的平方根 vs 预测值）图：该图用于诊断模型中的异方差性（即残差方差是否与预测值相关）。如果图中标准化残差的平方根在预测值上呈现出随机分布、无明显模式和规律，那么可以认为模型满足异方差性的假设。然而，如果图中出现明显的漏斗形状、梯形形状或其他模式，那可能表示模型存在异方差性，需要进一步调整模型。
-
-# 3. Residuals vs Leverage（残差 vs 杠杆值）图：该图用于识别数据点对回归模型的影响程度。在该图中，残差表示误差的大小，杠杆值表示数据点在自变量空间中的相对位置。如果数据点在图中具有高杠杆值，同时对应着较大的残差，那可能是一个“高杠杆点”或“杠杆杆点”，需进一步分析这些点是否对回归系数估计产生较大影响。
+# 高等教育总入学率直方图
+ggplot() +
+  geom_histogram(data = z, aes(x = values, y = ..density..),
+                 binwidth = 10, fill = "lightblue", color = "black") +
+  geom_density(data = z, aes(x = values, y = ..density..),
+               color = "red") +
+  geom_vline(data = z, aes(xintercept = mean(values),
+                          color = "Mean"), linetype = "dashed") +
+  geom_vline(data = z, aes(xintercept = mean(values) - sqrt(var(values)),
+                          color = "Lower SD"), linetype = "dashed") +
+  geom_vline(data = z, aes(xintercept = mean(values) + sqrt(var(values)),
+                          color = "Upper SD"), linetype = "dashed") +
+  labs(title = "高等教育总入学率直方图",
+       x = "入学率", y = "频率") +
+  theme_minimal() +
+  scale_color_manual(values = c("black", "purple", "green"),
+                     labels = c("Density", "Mean", "Standard Deviation"),
+                     guide = guide_legend())
 ```
 
 ```{r step8}
-# 使用相关性强的构建失业率的回归模型
-unemploy_related_col <- edu[, c(unemploy_related_idx, 29)]
+enroll_model <- lm(Gross_Tertiary_Education_Enrollment ~., data = edu[, -c(1:3)])
+enroll_model$coefficients
+summary(enroll_model)
+```
+```{r}
+ggplot(data = edu, aes(x = Lower_Secondary_End_Proficiency_Math, y = Gross_Tertiary_Education_Enrollment)) +
+    geom_point() +
+    geom_smooth(method = "lm", se = T)
+    
+ggplot(data = edu, aes(x = Birth_Rate, y = Gross_Tertiary_Education_Enrollment)) +
+    geom_point() +
+    geom_smooth(method = "lm", se = T)
+ggplot(data = edu, aes(x = Gross_Primary_Education_Enrollment, y = Gross_Tertiary_Education_Enrollment)) +
+    geom_point() +
+    geom_smooth(method = "lm", se = T)
+ggplot(data = edu, aes(x = Unemployment_Rate, y = Gross_Tertiary_Education_Enrollment)) +
+    geom_point() +
+    geom_smooth(method = "lm", se = T)
+```
 
-unemploy_model <- lm(Unemployment_Rate~., data = unemploy_related_col)
-unemploy_model$coefficients
-(unemploy_sum = summary(unemploy_model))
-unemploy_sum$coefficients
-```
 ```{r}
-# 数据划分
-set.seed(123)
-split <- createDataPartition(edu$Gross_Primary_Education_Enrollment, p = 0.7, list = F)
-train_data <- edu[split, ]
-test_data <- edu[-split, ]
+# 我们挑出具有显著性的变量重新进行建模
+enroll_model <- lm(Gross_Tertiary_Education_Enrollment ~ Lower_Secondary_End_Proficiency_Math + Birth_Rate + Gross_Primary_Education_Enrollment + Unemployment_Rate, data = edu)
+enroll_model$coefficients
+summary(enroll_model)
 ```
-```{r}
-# 利用car包
-library(car)
-```
+两组结果中的模型都具有统计显著性，且多重 R 平方的值分别为 0.7106 和 0.6584，说明模型能解释因变量的方差的比例较高。但还需注意，第一组结果的调整后 R 平方稍高，达到 0.6695，表示该模型更合适。而第一组的自由度较大（25 和 176），第二组的自由度较小（4 和 197）
 ```{r}
 qqPlot(enroll_model, simulate = T)
+# 最后为什么会飞出去呢
 ```
 ```{r}
 residplot <- function(fit, nbreaks=10) {
@@ -187,21 +172,54 @@ residplot <- function(fit, nbreaks=10) {
 residplot(enroll_model)
 # 出问题，均值不在0这
 ```
+```{r step88}
 
+# 获取最后两列与其他列的相关系
+enroll <- cor(edu[, 28], edu[, c(-1, -2, -3, -28)])
+unemploy <- cor(edu[, 29], edu[, c(-1, -2, -3, -29)])
+
+# 设置阈值
+threshold <- 0.7
+
+# 获取强相关的列号
+(enroll_related_idx <- which(abs(enroll) > threshold))
+(unemploy_related_idx <- which(abs(unemploy) > threshold))
+```
+```{r step99}
+# 使用相关性强的构建入学率的回归模型
+enroll_related_col <- edu[, c(enroll_related_idx, 28)]
+
+enroll_model <- lm(Gross_Tertiary_Education_Enrollment~., data = enroll_related_col)
+enroll_model$coefficients
+(enroll_sum = summary(enroll_model))
+enroll_sum$coefficients
+```
 ```{r}
-# 独立性
-durbinWatsonTest(enroll_model)
-# p值不显著，无自相关，但是这个lag表示每个数据都和后一个比较，适用于时间独立的数据
+# 诊断
+par(mfrow=c(2,2))
+plot(enroll_model) 
+# 4. qq残差图看出正态性不错的，在45度斜率的直线上
+# 1. Residuals vs Fitted（残差 vs 预测值）图：该图用来检查模型中的残差是否随着预测值的增加而呈现出某种模式或系统性的变化。如果残差在预测值上呈现出随机分布、无明显模式和规律，那么模型的拟合效果通常是良好的。不过，如果在图中发现明显的曲线形状、漏斗形状或者其他规律性模式，那可能意味着模型存在问题（如非线性关系、异方差性等）。
+
+# 2. Scale-Location（标准化残差的平方根 vs 预测值）图：该图用于诊断模型中的异方差性（即残差方差是否与预测值相关）。如果图中标准化残差的平方根在预测值上呈现出随机分布、无明显模式和规律，那么可以认为模型满足异方差性的假设。然而，如果图中出现明显的漏斗形状、梯形形状或其他模式，那可能表示模型存在异方差性，需要进一步调整模型。
+
+# 3. Residuals vs Leverage（残差 vs 杠杆值）图：该图用于识别数据点对回归模型的影响程度。在该图中，残差表示误差的大小，杠杆值表示数据点在自变量空间中的相对位置。如果数据点在图中具有高杠杆值，同时对应着较大的残差，那可能是一个“高杠杆点”或“杠杆杆点”，需进一步分析这些点是否对回归系数估计产生较大影响。
 ```
 
-```{r}
-# 验证是否确实线性
-crPlots(enroll_model)
+```{r step89}
+# 使用相关性强的构建失业率的回归模型
+unemploy_related_col <- edu[, c(unemploy_related_idx, 29)]
+
+unemploy_model <- lm(Unemployment_Rate~., data = unemploy_related_col)
+unemploy_model$coefficients
+(unemploy_sum = summary(unemploy_model))
+unemploy_sum$coefficients
 ```
 ```{r}
-# 检验误差方差是否恒定
-ncvTest(enroll_model)
-# 不显著 -> 恒定
-spreadLevelPlot(enroll_model)
+# 数据划分
+set.seed(123)
+split <- createDataPartition(edu$Gross_Primary_Education_Enrollment, p = 0.7, list = F)
+train_data <- edu[split, ]
+test_data <- edu[-split, ]
 ```
 
