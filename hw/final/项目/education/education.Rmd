@@ -1,19 +1,39 @@
 ---
 title: "final-education"
 author:
-    - HYSM
+  - "2154177 何应豪"
+  - "2151298 杨滕超"
+  - "2151299 苏家铭"
+  - "2151294 马威"
 documentclass: ctexart
-geometry: "left=2.5cm,right=2cm,top=3cm,bottom=2.5cm"
+geometry: "left=2.5cm, right=2cm, top=3cm, bottom=1cm"
 output:
-  pdf_document: default
-  html_notebook: default
   rticles::ctex:
     fig_caption: yes
     number_sections: yes
     toc: yes
-classoption: "hyperref,"
 ---
-```{r step1, warning=FALSE}
+# 研究问题和假设
+## 背景
+教育工作在每一个国家和地区都尤为重要，因为它影响着诸多因素，如人才培养等。而全球各个国家和地区的教育情况，一直是统计学家和教育工作者所密切关注的。他们一直致力于通过数据分析，对不同国家和地区的教育动态提供深刻的见解，希望能够给全球教育工作者一个评估、加强和重塑全球教育系统的机会。
+
+## 现有研究
+已搜集到全球范围内近 200  个国家和地区的教育数据，包括29列，内容涵盖失学率、学业完成率、熟练程度、识字率、出生率以及小学和高等教育入学统计等信息。
+
+## 研究问题
+1. 什么因素影响一个国家或地区的高等教育入学率？
+2. 什么因素影响一个国家或地区的失业率？
+
+## 研究假设
+1. 高教入学率与失学率成反比，与学业完成率成正比
+2. 失业率可能与失学率成正比
+
+# 数据分析方法选择
+1. 本实验需要进行预测，高等教育入学率、失业率是一个特定数值，且有较多的自变量。适合使用线性回归建立预测模型
+
+# 数据分析
+## 准备工作
+```{r preperation, message=FALSE, warning=FALSE}
 # 加载需要的包
 library(dplyr)
 library(ggplot2)
@@ -21,90 +41,134 @@ library(mice)
 library(caret)
 library(car)
 
+# 清除当前镜像中的数据
 rm(list = ls())
-```
 
-```{r step2}
 # 读取需要数据集
 edu <- read.csv("education.csv", stringsAsFactors = F)
 ```
 
-```{r step3}
-# 统计概要
-summary(edu)
-```
-
-```{r step4}
-# 缺失值判断
+## 数据预处理
+### 处理缺失值（总体）
+```{r pretreatment_overall, message=FALSE}
+# 缺失值判断：NA
 md.pattern(edu, rotate.names = T)
 any(is.na(edu))
-# 可以看到没有缺失值
+
+# 缺失值判断：0
+count_zero <- colSums(edu == 0)
+print(count_zero)
 ```
 
-```{r step5}
-# 数据标准化
-# numeric_vars <- c("失业率", "高教总入学率")
-# edu[numeric_vars] <- scale(edu[numeric_vars])
+### 处理缺失值（高教入学率）
+```{r pretreatment_tertiary}
+# 去掉高教入学率缺失或过高的记录
+edu.tertiary <- edu[edu$Gross_Tertiary_Education_Enrollment != 0.0 & 
+                      edu$Gross_Tertiary_Education_Enrollment <= 100.0, ]
 
-# 列名简短
-# 列名修改对应的映射字典
-col_mapping <- c(
-  "Countries and Areas" = "地区",
-  "Latitude" = "纬度",
-  "Longitude" = "经度",
-  "OOSR_Pre0Primary_Age_Male" = "学前失学率男",
-  "OOSR_Pre0Primary_Age_Female" = "学前失学率女",
-  "OOSR_Primary_Age_Male" = "小学失学率男",
-  "OOSR_Primary_Age_Female" = "小学失学率女",
-  "OOSR_Lower_Secondary_Age_Male" = "初中失学率男",
-  "OOSR_Lower_Secondary_Age_Female" = "初中失学率女",
-  "OOSR_Upper_Secondary_Age_Male" = "高中失学率男",
-  "OOSR_Upper_Secondary_Age_Female" = "高中失学率女",
-  "Completion_Rate_Primary_Male" = "小学完成率男",
-  "Completion_Rate_Primary_Female" = "小学完成率女",
-  "Completion_Rate_Lower_Secondary_Male" = "初中完成率男",
-  "Completion_Rate_Lower_Secondary_Female" = "初中完成率女",
-  "Completion_Rate_Upper_Secondary_Male" = "高中完成率男",
-  "Completion_Rate_Upper_Secondary_Female" = "高中完成率女",
-  "Grade_2_3_Proficiency_Reading" = "23年级阅读",
-  "Grade_2_3_Proficiency_Math" = "23年级数学",
-  "Primary_End_Proficiency_Reading" = "小学结束阅读",
-  "Primary_End_Proficiency_Math" = "小学结束数学",
-  "Lower_Secondary_End_Proficiency_Reading" = "初中结束阅读",
-  "Lower_Secondary_End_Proficiency_Math" = "初中结束数学",
-  "Youth_15_24_Literacy_Rate_Male" = "青年识字率男",
-  "Youth_15_24_Literacy_Rate_Female" = "青年识字率女",
-  "Birth_Rate" = "出生率",
-  "Gross_Primary_Education_Enrollment" = "小教总入学率",
-  "Gross_Tertiary_Education_Enrollment" = "高教总入学率",
-  "Unemployment_Rate" = "失业率"
-)
+# 影响显著的列
+tertiary_remark <- c("Gross_Tertiary_Education_Enrollment")
 
-# 修改列名
-edu2 <- edu
-colnames(edu2) <- col_mapping
+# 单独对高教入学率和其余列建立线性回归模型
+tertiary.co <- function(column) {
+  model <- lm(
+    as.formula(paste("Gross_Tertiary_Education_Enrollment ~ ", column)),
+    data = edu[(edu$Gross_Tertiary_Education_Enrollment != 0) & (edu[, column] != 0), ])
+  sum <- summary(model)
+  p.value <- sum$coefficients[column, "Pr(>|t|)"]
+  num <- as.integer(sum$fstatistic["dendf"])
+  cat(column, "--", p.value, "--", num)
+  
+  if (p.value < 0.05 & num >= 100) {
+    tertiary_remark <<- c(tertiary_remark, column)
+    cat("\n")
+  }
+  else {
+    cat("(eliminated)", "\n")
+  }
+  
+}
+
+for (column in names(edu)[-c(1, 28)]) {
+  tertiary.co(column)
+}
+
+# 对这些列进行均值填补
+for (column in tertiary_remark) {
+  edu.tertiary[, column][edu.tertiary[, column] == 0] <-
+    mean(edu.tertiary[, column][edu.tertiary[, column] != 0])
+}
+
+# 剔除单独不显著的列
+tertiary_remark <- c(tertiary_remark)
+edu.tertiary <- edu.tertiary[, tertiary_remark]
 ```
 
-```{r step6}
-# 相关性分析
-require(corrplot)
-library(Hmisc)
+### 处理缺失值（失业率）
+```{r pretreatment_unemploy}
+# 去掉失业率缺失或过高的记录
+edu.unemploy <- edu[edu$Unemployment_Rate != 0.0 & edu$Unemployment_Rate <= 100.0, ]
 
-cor <- rcorr(as.matrix(edu2[, 4:29]))
-M <- cor$r
-p_mat <- cor$P
-# tl.cex 调整字体大小
-# pch.cex 调整叉叉大小
-corrplot(M, type = "upper", order = "hclust", p.mat = p_mat, sig.level = 0.01, tl.cex = 0.7, pch.cex = 0.7)
+# 影响显著的列
+unemploy_remark <- c("Unemployment_Rate")
+
+# 单独对失业率和其余列建立线性回归模型
+unemploy.co <- function(column) {
+  model <- lm(
+    as.formula(paste("Unemployment_Rate ~ ", column)),
+    data = edu[(edu$Unemployment_Rate != 0) & (edu[, column] != 0), ])
+  sum <- summary(model)
+  p.value <- sum$coefficients[column, "Pr(>|t|)"]
+  num <- as.integer(sum$fstatistic["dendf"])
+  cat(column, "--", p.value, "--", num)
+  
+  if (p.value < 0.05 & num >= 100) {
+    unemploy_remark <<- c(unemploy_remark, column)
+    cat("\n")
+  }
+  else {
+    cat("(eliminated)", "\n")
+  }
+}
+
+for (column in names(edu)[-c(1, 29)]) {
+  unemploy.co(column)
+}
+
+
+# 对这些列进行均值填补
+for (column in unemploy_remark) {
+  edu.unemploy[, column][edu.unemploy[, column] == 0] <-
+    mean(edu.unemploy[, column][edu.unemploy[, column] != 0])
+}
+
+# 剔除单独不显著的列
+unemploy_remark <- c(unemploy_remark)
+edu.unemploy <- edu.unemploy[, unemploy_remark]
+
+# 对这些列进行均值填补
+for (column in tertiary_remark) {
+  edu.tertiary[, column][edu.tertiary[, column] == 0] <- mean(edu.tertiary[, column][edu.tertiary[, column] != 0])
+}
+
+# 剔除单独不显著的列
+tertiary_remark <- c(tertiary_remark)
+edu.tertiary <- edu.tertiary[, tertiary_remark]
 ```
-```{r step7-1}
-z <- data.frame(values = edu$Gross_Tertiary_Education_Enrollment)
+
+## 高教入学率分析
+### 基础分析
+```{r basic_analysis_tertiary, fig.show='hold'}
+# 统计概要
+summary(edu.tertiary)
 
 # 高等教育总入学率直方图
+z <- data.frame(values = edu.tertiary$Gross_Tertiary_Education_Enrollment)
+
 ggplot() +
-  geom_histogram(data = z, aes(x = values, y = ..density..),
+  geom_histogram(data = z, aes(x = values, y = after_stat(density)),
                  binwidth = 10, fill = "lightblue", color = "black") +
-  geom_density(data = z, aes(x = values, y = ..density..),
+  geom_density(data = z, aes(x = values, after_stat(density)),
                color = "red") +
   geom_vline(data = z, aes(xintercept = mean(values),
                           color = "Mean"), linetype = "dashed") +
@@ -112,22 +176,113 @@ ggplot() +
                           color = "Lower SD"), linetype = "dashed") +
   geom_vline(data = z, aes(xintercept = mean(values) + sqrt(var(values)),
                           color = "Upper SD"), linetype = "dashed") +
-  labs(title = "高等教育总入学率直方图",
-       x = "入学率", y = "频率") +
+  labs(title = "Gross Tertiary Education Enrollment Histogram",
+       x = "Enrollment", y = "Density") +
   theme_minimal() +
   scale_color_manual(values = c("black", "purple", "green"),
                      labels = c("Density", "Mean", "Standard Deviation"),
                      guide = guide_legend())
+
+# 高等教育总入学率QQ图
+qqPlot(edu.tertiary$Gross_Tertiary_Education_Enrollment)
 ```
 
-```{r step7-2}
-z <- data.frame(values = edu$Unemployment_Rate)
+### 主要分析：建立预测模型（所有因素下Akaike的backward）
+```{r akaike_all_backward_tertiary}
+enroll_model_all <- lm(Gross_Tertiary_Education_Enrollment ~., data = edu.tertiary)
+backward <- step(enroll_model_all, direction = 'backward', scope = formula(enroll_model_all), trace = 0)
+backward$anova
+summary(backward)
+```
+
+### 主要分析：建立预测模型（所有因素下Akaike的forward）
+```{r akaike_all_forward_tertiary}
+enroll_model_1 <- lm(Gross_Tertiary_Education_Enrollment ~ 1, data = edu.tertiary)
+forward <- step(enroll_model_1, direction = 'forward', scope = formula(enroll_model_all), trace = 0)
+forward$anova
+summary(forward)
+```
+
+### 主要分析：建立预测模型（指定显著因素下Akaike的backward）
+```{r akaike_part_backward_tertiary}
+enroll_model2 <- lm(Gross_Tertiary_Education_Enrollment ~
+  Latitude +
+  OOSR_Pre0Primary_Age_Male +
+  OOSR_Pre0Primary_Age_Female +
+  OOSR_Primary_Age_Male +
+  # OOSR_Primary_Age_Female +
+  # OOSR_Lower_Secondary_Age_Male +
+  # OOSR_Lower_Secondary_Age_Female +
+  OOSR_Upper_Secondary_Age_Male +
+  OOSR_Upper_Secondary_Age_Female +
+  Completion_Rate_Primary_Male +
+  Completion_Rate_Primary_Female +
+  # Completion_Rate_Lower_Secondary_Male +
+  # Completion_Rate_Lower_Secondary_Female +
+  Completion_Rate_Upper_Secondary_Male +
+  Completion_Rate_Upper_Secondary_Female +
+  Birth_Rate
+, data = edu.tertiary)
+summary(enroll_model2)
+backward <- step(enroll_model2, direction = 'backward', scope = formula(enroll_model2), trace = 0)
+backward$anova
+summary(backward)
+enroll_model2 <- backward
+```
+
+### 单独影响显著因素散点图
+```{r plot_tertiary, fig.align='center', fig.show='hold'}
+visualize <- function(column) {
+  plot <- ggplot(data = edu.tertiary, aes(x = !!as.name(column), y = Gross_Tertiary_Education_Enrollment)) +
+    geom_point() +
+    geom_smooth(formula = y ~ x, method = "lm", se = T)
+  
+  print(plot)
+}
+
+for (x in tertiary_remark[-1]) {
+  visualize(x)
+}
+
+```
+
+### 模型评估
+```{r model_evaluate_tertiary, fig.align='center', fig.show='hold'}
+# 模型的QQ图
+qqPlot(enroll_model2, simulate = T)
+
+# 绘制预测残差分布直方图
+residplot <- function(fit, nbreaks=10) {
+ z <- rstudent(fit)
+ hist(z, breaks=nbreaks, freq=FALSE,
+ xlab="Studentized Residual",
+ main="Distribution of Errors")
+ rug(jitter(z), col="brown")
+ curve(dnorm(x, mean=mean(z), sd=sd(z)),
+ add=TRUE, col="blue", lwd=2)
+ lines(density(z)$x, density(z)$y,
+ col="red", lwd=2, lty=2)
+ legend("topright",
+ legend = c( "Normal Curve", "Kernel Density Curve"),
+ lty=1:2, col=c("blue","red"), cex=.7)
+}
+
+residplot(enroll_model2)
+```
+
+## 失业率分析
+### 基础分析
+```{r basic_analysis_unemploy, fig.show='hold'}
+# 统计概要
+summary(edu.unemploy)
 
 # 失业率直方图
+z <- data.frame(values = edu$Unemployment_Rate)
+
 ggplot() +
-  geom_histogram(data = z, aes(x = values, y = ..density..),
+  geom_histogram(data = z, aes(x = values, y = after_stat(density)),
                  binwidth = 3, fill = "lightblue", color = "black") +
-  geom_density(data = z, aes(x = values, y = ..density..),
+  geom_density(data = z, aes(x = values, y = after_stat(density)),
                color = "red") +
   geom_vline(data = z, aes(xintercept = mean(values),
                           color = "Mean"), linetype = "dashed") +
@@ -135,53 +290,72 @@ ggplot() +
                           color = "Lower SD"), linetype = "dashed") +
   geom_vline(data = z, aes(xintercept = mean(values) + sqrt(var(values)),
                           color = "Upper SD"), linetype = "dashed") +
-  labs(title = "失业率直方图",
-       x = "失业率", y = "频率") +
+  labs(title = "Unemployment Rate Histogram",
+       x = "Rate", y = "Density") +
   theme_minimal() +
   scale_color_manual(values = c("black", "purple", "green"),
                      labels = c("Density", "Mean", "Standard Deviation"),
                      guide = guide_legend())
-```
-```{r step8-1}
-qqPlot(edu$Gross_Tertiary_Education_Enrollment)
-```
-```{r step8-2}
-qqPlot(edu$Unemployment_Rate)
+
+# 失业率QQ图
+qqPlot(edu.unemploy$Unemployment_Rate)
 ```
 
-```{r step8}
-enroll_model <- lm(Gross_Tertiary_Education_Enrollment ~., data = edu[, -c(1:3)])
-enroll_model$coefficients
-summary(enroll_model)
-```
-```{r}
-ggplot(data = edu, aes(x = Lower_Secondary_End_Proficiency_Math, y = Gross_Tertiary_Education_Enrollment)) +
-    geom_point() +
-    geom_smooth(method = "lm", se = T)
-    
-ggplot(data = edu, aes(x = Birth_Rate, y = Gross_Tertiary_Education_Enrollment)) +
-    geom_point() +
-    geom_smooth(method = "lm", se = T)
-ggplot(data = edu, aes(x = Gross_Primary_Education_Enrollment, y = Gross_Tertiary_Education_Enrollment)) +
-    geom_point() +
-    geom_smooth(method = "lm", se = T)
-ggplot(data = edu, aes(x = Unemployment_Rate, y = Gross_Tertiary_Education_Enrollment)) +
-    geom_point() +
-    geom_smooth(method = "lm", se = T)
+### 主要分析：建立预测模型（所有因素下Akaike的backward）
+```{r akaike_all_backward_unemploy}
+unemploy_model_all <- lm(Unemployment_Rate ~., data = edu.unemploy)
+backward <- step(unemploy_model_all, direction = 'backward', scope = formula(unemploy_model_all), trace = 0)
+backward$anova
+summary(backward)
 ```
 
-```{r}
-# 我们挑出具有显著性的变量重新进行建模
-enroll_model <- lm(Gross_Tertiary_Education_Enrollment ~ Lower_Secondary_End_Proficiency_Math + Birth_Rate + Gross_Primary_Education_Enrollment + Unemployment_Rate, data = edu)
-enroll_model$coefficients
-summary(enroll_model)
+### 主要分析：建立预测模型（所有因素下Akaike的forward）
+```{r akaike_all_forward_unemploy}
+unemploy_model_1 <- lm(Unemployment_Rate ~ 1, data = edu.unemploy)
+forward <- step(unemploy_model_1, direction = 'forward', scope = formula(unemploy_model_all), trace = 0)
+forward$anova
+summary(forward)
 ```
-两组结果中的模型都具有统计显著性，且多重 R 平方的值分别为 0.7106 和 0.6584，说明模型能解释因变量的方差的比例较高。但还需注意，第一组结果的调整后 R 平方稍高，达到 0.6695，表示该模型更合适。而第一组的自由度较大（25 和 176），第二组的自由度较小（4 和 197）
-```{r}
-qqPlot(enroll_model, simulate = T)
-# 最后为什么会飞出去呢
+
+### 主要分析：建立预测模型（指定显著因素下Akaike的backward）
+```{r akaike_part_backward_unemploy}
+unemploy_model2 <- lm(Unemployment_Rate ~
+  Longitude +
+  OOSR_Upper_Secondary_Age_Female +
+  Completion_Rate_Primary_Male +
+  Completion_Rate_Primary_Female +
+  Completion_Rate_Lower_Secondary_Male +
+  Completion_Rate_Lower_Secondary_Female +
+  Completion_Rate_Upper_Secondary_Female
+, data = edu.unemploy)
+summary(unemploy_model2)
+backward <- step(unemploy_model2, direction = 'backward', scope = formula(unemploy_model2), trace = 0)
+backward$anova
+summary(backward)
+unemploy_model2 <- backward
 ```
-```{r}
+
+### 单独影响显著因素散点图
+```{r plot_unemploy, fig.align='center', fig.show='hold'}
+visualize <- function(column) {
+  plot <- ggplot(data = edu.unemploy, aes(x = !!as.name(column), y = Unemployment_Rate)) +
+    geom_point() +
+    geom_smooth(formula = y ~ x, method = "lm", se = T)
+  
+  print(plot)
+}
+
+for (x in unemploy_remark[-1]) {
+  visualize(x)
+}
+```
+
+### 模型评估
+```{r model_evaluate_unemploy, fig.align='center', fig.show='hold'}
+# 模型的QQ图
+qqPlot(unemploy_model2, simulate = T)
+
+# 绘制预测残差分布直方图
 residplot <- function(fit, nbreaks=10) {
  z <- rstudent(fit)
  hist(z, breaks=nbreaks, freq=FALSE,
@@ -195,146 +369,118 @@ residplot <- function(fit, nbreaks=10) {
  legend("topright",
  legend = c( "Normal Curve", "Kernel Density Curve"),
  lty=1:2, col=c("blue","red"), cex=.7)
- }
-```
-```{r}
-residplot(enroll_model)
-# 出问题，均值不在0这
-```
-```{r}
-unemploy_model <- lm(Unemployment_Rate ~., data = edu[, -c(1:3)])
-unemploy_model$coefficients
-summary(unemploy_model)
-```
-```{r}
-ggplot(data = edu, aes(x = Gross_Tertiary_Education_Enrollment, y = Unemployment_Rate)) +
-    geom_point() +
-    geom_smooth(method = "lm", se = T)
-```
-```{r}
-# 我们挑出具有显著性的变量重新进行建模
-unemploy_model <- lm(Unemployment_Rate ~ Gross_Tertiary_Education_Enrollment + OOSR_Pre0Primary_Age_Male + OOSR_Upper_Secondary_Age_Male, data = edu)
-unemploy_model$coefficients
-summary(unemploy_model)
-```
-```{r}
-qqPlot(unemploy_model)
-```
-```{r}
-residplot <- function(fit, nbreaks=10) {
- z <- rstudent(fit)
- hist(z, breaks=nbreaks, freq=FALSE,
- xlab="Studentized Residual",
- main="Distribution of Errors")
- rug(jitter(z), col="brown")
- curve(dnorm(x, mean=mean(z), sd=sd(z)),
- add=TRUE, col="blue", lwd=2)
- lines(density(z)$x, density(z)$y,
- col="red", lwd=2, lty=2)
- legend("topright",
- legend = c( "Normal Curve", "Kernel Density Curve"),
- lty=1:2, col=c("blue","red"), cex=.7)
- }
-```
-```{r}
-residplot(unemploy_model, 5)
-```
-```{r}
-# Akaike
-intercept_only <- lm(Gross_Tertiary_Education_Enrollment ~ 1, data = edu)
+}
 
-all <- lm(Gross_Tertiary_Education_Enrollment~ ., data = edu[, -c(1,2,3)])
-
-forward <- step(intercept_only, scope = formula(all), trace = 0)
-
-forward$anova
-
-forward$coefficients
-```
-```{r}
-# 根据Akaike的建模
-enroll_model <- lm(Gross_Tertiary_Education_Enrollment ~ Lower_Secondary_End_Proficiency_Math + Birth_Rate + Gross_Primary_Education_Enrollment + Unemployment_Rate + Grade_2_3_Proficiency_Math, data = edu)
-enroll_model$coefficients
-summary(enroll_model)
-```
-```{r}
-qqPlot(enroll_model, simulate = T)
-```
-```{r}
-residplot(enroll_model)
+residplot(unemploy_model2, 10)
 ```
 
+# 分析结果解读
+## 原始数据
+
+- 在预处理时，我们发现数据缺失比较严重，某些列的缺失程度达到3/4。而且由于原始数据的列较多，我们在预处理时就进行了初步筛选。
+- 方法是对于某一列x和自变量y，选出x和y都不缺失的行，单独建立y ~ x的线性回归模型。拟合斜率p值小于0.05则保留，否则初步剔除。若该列缺失1/2则也剔除
+- 对原始数据中除y以外的所有列进行上述的操作，对保留下来的列进行均值插补后，建立和y的多元线性回归模型，称为model_all
+- 同时我们使用了针对AIC的模型优化，另外建立了y和常量1的回归模型model_1，分别对model_all和model_1进行backward和forward优化
+- 最后我们根据model_all中各因素的影响情况，手动剔除一些影响不显著/拟合结果显然违反常理的因素后，建模并进行backward优化，称为model_2。停止剔除因素的情况是model_2：
+  - AIC值得到优化或相差不大
+  - 与其余两个模型的影响显著的因素相近
+  - R方大小合适
+  - 因素普遍影响显著
+- 比较model_1、model_2、model_all，择一采用
+
+## 高教入学率模型
+### 模型比较
+
+|项目|全因素-backward|全因素-forward|手动选择因素-backward|
+|:--:|:--:|:--:|:--:|
+|AIC|1003.214|1003.219|1007.727|
+|残差标准差|15.84|15.96|16.21|
+|R方|0.6839|0.6732|0.6612|
+|调整后R方|0.6691|0.6638|0.6534|
+|因素总数|8|5|4|
+|显著因素总数|7|5|4|
+|模型p值|<2.2e-16|<2.2e-16|<2.2e-16|
+
+可以发现AIC优化后的model_all、model_1虽然数据较为漂亮，但有显然违反常理的拟合结果，因此在手动剔除后采用了较为合理的model_2。
+
+### 模型分析
 ```{r}
-intercept_only <- lm(Unemployment_Rate ~ 1, data = edu)
-
-all <- lm(Unemployment_Rate~ ., data = edu[, -c(1,2,3)])
-
-forward <- step(intercept_only, scope = formula(all), trace = 0)
-
-forward$anova
-
-forward$coefficients
-```
-```{r}
-unemploy_model <- lm(Unemployment_Rate ~ Completion_Rate_Lower_Secondary_Female + Gross_Primary_Education_Enrollment + OOSR_Pre0Primary_Age_Male + OOSR_Upper_Secondary_Age_Male + Gross_Tertiary_Education_Enrollment + Grade_2_3_Proficiency_Math + OOSR_Primary_Age_Male, data = edu)
-unemploy_model$coefficients
-summary(unemploy_model)
-```
-```{r}
-qqPlot(unemploy_model)
-```
-```{r}
-residplot(unemploy_model)
-```
-
-```{r step88}
-
-# 获取最后两列与其他列的相关系
-enroll <- cor(edu[, 28], edu[, c(-1, -2, -3, -28)])
-unemploy <- cor(edu[, 29], edu[, c(-1, -2, -3, -29)])
-
-# 设置阈值
-threshold <- 0.7
-
-# 获取强相关的列号
-(enroll_related_idx <- which(abs(enroll) > threshold))
-(unemploy_related_idx <- which(abs(unemploy) > threshold))
-```
-```{r step99}
-# 使用相关性强的构建入学率的回归模型
-enroll_related_col <- edu[, c(enroll_related_idx, 28)]
-
-enroll_model <- lm(Gross_Tertiary_Education_Enrollment~., data = enroll_related_col)
-enroll_model$coefficients
-(enroll_sum = summary(enroll_model))
-enroll_sum$coefficients
-```
-```{r}
-# 诊断
+print(enroll_model2$coefficients)
 par(mfrow=c(2,2))
-plot(enroll_model) 
-# 4. qq残差图看出正态性不错的，在45度斜率的直线上
-# 1. Residuals vs Fitted（残差 vs 预测值）图：该图用来检查模型中的残差是否随着预测值的增加而呈现出某种模式或系统性的变化。如果残差在预测值上呈现出随机分布、无明显模式和规律，那么模型的拟合效果通常是良好的。不过，如果在图中发现明显的曲线形状、漏斗形状或者其他规律性模式，那可能意味着模型存在问题（如非线性关系、异方差性等）。
-
-# 2. Scale-Location（标准化残差的平方根 vs 预测值）图：该图用于诊断模型中的异方差性（即残差方差是否与预测值相关）。如果图中标准化残差的平方根在预测值上呈现出随机分布、无明显模式和规律，那么可以认为模型满足异方差性的假设。然而，如果图中出现明显的漏斗形状、梯形形状或其他模式，那可能表示模型存在异方差性，需要进一步调整模型。
-
-# 3. Residuals vs Leverage（残差 vs 杠杆值）图：该图用于识别数据点对回归模型的影响程度。在该图中，残差表示误差的大小，杠杆值表示数据点在自变量空间中的相对位置。如果数据点在图中具有高杠杆值，同时对应着较大的残差，那可能是一个“高杠杆点”或“杠杆杆点”，需进一步分析这些点是否对回归系数估计产生较大影响。
+plot(enroll_model2)
 ```
 
-```{r step89}
-# 使用相关性强的构建失业率的回归模型
-unemploy_related_col <- edu[, c(unemploy_related_idx, 29)]
+以下介绍model_2中，对一个国家或地区高教入学率影响显著的因素
 
-unemploy_model <- lm(Unemployment_Rate~., data = unemploy_related_col)
-unemploy_model$coefficients
-(unemploy_sum = summary(unemploy_model))
-unemploy_sum$coefficients
-```
+#### 纬度
+
+
+**拟合结果：** 每高1°，高教入学率**增加0.46%**
+
+我们惊讶地发现三个模型中Latitude都有显著的影响，为此还特意进行了可视化，散点图显示的确低纬度地区集中在高教入学率低的区域，高纬度地区集中在高教入学率高的区域。最有可能的原因就是位于各个纬度区间的国家和地区发展情况差异明显。这里为了阐述方便，纬度的高低未采用地理上的约定：
+
+- **低纬度（0-20）：** 东南亚、印度、非洲北部和美洲中部（多欠发达国家）
+- **中纬度（20-40）：** 中东、东亚、美国、非洲和南美洲（多发展中国家）
+- **高纬度（40-60）：** 欧洲、俄罗斯、加拿大（多发达国家）
+
+这无疑会带来以下结果：
+
+- **人口密度：** 高纬度地区的人口密度可能较低，这可能导致更好的教育资源分配和更低的竞争，从而提高高教入学率。
+- **经济状况：** 高纬度地区可能拥有更发达的经济体系，有更多的资源投入到教育领域，包括高等教育。
+- **社会状况：** 不同纬度的国家或地区可能对于教育的社会看法不同，这可能对高教入学率产生影响。
+
+#### 学前、高中男生失学率
+
+
+**拟合结果：**
+
+- 学前每高1%，高教入学率**降低0.13%**
+- 高中每高1%，高教入学率**降低0.35%**
+
+同为失学率，学前和高中可以分开看待。
+
+首先，由于学前教育就学习本身来说竞争压力较小，同时学前教育对于形成价值观、认识世界有重要的影响，一般家庭普遍会让孩子接受学前教育。因此，学前失学最有可能是家庭原因，比如经济问题或家庭背景问题；亦或者是当地学前教育匮乏。无法接受学前教育带来的学习能力、知识缺失，会暗中影响到孩子能否接受高等教育。
+
+高中失学则不同，一方面，就学习来说高中失学意味着为高等教育做的学习准备没有做好，高等教育所需要的一些学习品质没有养成，因此能力不足以接受高等教育，直接影响其高教入学；另一方面，在某些社会中，可能存在对高等教育的不同看法或文化倾向，这些文化中的人可能更倾向于早期就业，提倡职业教育。综上，虽然同为下降趋势，高中失学明显比学前失学影响大。
+
+#### 生育率
+
+
+**拟合结果：** 每高1%，高教入学率降低**0.96%**
+
+表面上，高生育率意味着学生群体有更多的新鲜血液，有更多人可能接受高等教育，可以带动整个国家或地区的高教入学率。但以下原因可以解释该拟合结果：
+
+- **资源竞争：** 生育率高导致的人口增长，在高等教育资源增长与人口增长不同步时，就会导致入学率下降。因为资源分配极大激化了有限高等教育资源的竞争。
+- **家庭压力：** 高生育率意味着家庭面临的经济挑战更多，也就意味着家庭难以支付较高的高等教育费用，提供足够支持鼓励孩子接受高等教育的可能就更大
+- **价值观念：** 在一些高生育率文化中，人们可能更看重一个人的家庭责任而非受教育水平，导致更多的家庭倾向于让孩子早日进入工作岗位，而不是继续接受高等教育。
+
+## 失业率模型
+### 模型比较
+
+|项目|全因素-backward/全因素-forward/手动选择因素-backward|
+|:--:|:--:|
+|AIC|545.5354|
+|残差标准差|4.658|
+|R方|0.1734|
+|调整后R方|0.159|
+|因素总数|3|
+|显著因素总数|2|
+|模型p值|3.466e-07|
+
 ```{r}
-# 数据划分
-set.seed(123)
-split <- createDataPartition(edu$Gross_Primary_Education_Enrollment, p = 0.7, list = F)
-train_data <- edu[split, ]
-test_data <- edu[-split, ]
+par(mfrow=c(2,2))
+plot(unemploy_model2)
 ```
 
+三个模型完全一致，且无论从R方、残差分布直方图来看拟合效果都非常一般。2个显著影响因素还是非常反直觉且难以解释的：
+
+- **经度：** 世界范围内国家和地区在经度上的分布毫无规律，同一经度上的国家和地区共同特点也很少
+- **女生初中完成率：** 完全无法解释为什么女生初中完成率越高，失业率越高（即拟合斜率为正）
+
+参考高教入学率的拟合结果，我们采用的统计方法有一定合理性。因此经过讨论，我们决定放弃以回归模型对失业率进行预测。因为失业率是一个更为复杂，与社会情况关系更密切的因素。它需要考虑到一个国家或地区的政治、经济因素（如经济大萧条引起的美国高失业率），单单从教育因素预测失业率不免过于片面。
+
+## 总结
+1. 从单因素散点图上看，实际上高教入学率的确和各类失学率成反比，和各类完成率成正比。单单从模型上考虑其实也不完全足够。但无论如何，经过本次分析，我们可以给全球教育工作者的建议如下：
+  - **关注失学人群：** 接受高等教育是一个水到渠成的结果，离不开孩子成长各个阶段的教育。无论是哪一环的缺失，带来的影响都不可估量，因为初等教育对于人的价值观塑造非常重要，没有正确引导，孩子接触不良因素的可能就会极大提升。
+  - **关注个体差异：** 意识到每个学生都是独特的个体，有着不同的学习风格、兴趣和能力。同时这也意味着要考虑学生所处地区的社会情况，因地制宜进行教育引导，高等教育也许真的不是唯一的出路，不必一味强求，帮助孩子培养良好品质和能力才是目标。
+2. 失业率虽然与预期不符，但并不代表教育与就业完全无关。孩子通过接受教育培养出的学习能力、人际交往能力在工作中依然有帮助，显然不能因为看似关系不大而放弃对学生的教育，相反还应该帮助学生树立正确的择业观、就业观，这才是教育的意义所在。当然，前面也提到就业还需考虑许多教育以外的因素，因此教育工作者若想在学生就业方面提供帮助，需要以开阔的视野去获取相关信息，以求结合专业知识提供更加合理的建议。
