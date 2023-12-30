@@ -1,0 +1,2 @@
+[1] "5 : 814.772775846327"
+[1] "Expected price change over the forecast period for ARIMA( 5 , 1 , 9 ):  -2.50954387441897"
