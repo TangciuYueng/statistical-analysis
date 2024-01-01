@@ -180,7 +180,7 @@ ggplot() +
        x = "Enrollment", y = "Density") +
   theme_minimal() +
   scale_color_manual(values = c("black", "purple", "green"),
-                     labels = c("Density", "Mean", "Standard Deviation"),
+                     labels = c("Mean", "Lower SD", "Upper SD"),
                      guide = guide_legend())
 
 # 高等教育总入学率QQ图
@@ -294,7 +294,7 @@ ggplot() +
        x = "Rate", y = "Density") +
   theme_minimal() +
   scale_color_manual(values = c("black", "purple", "green"),
-                     labels = c("Density", "Mean", "Standard Deviation"),
+                     labels = c("Mean", "Lower SD", "Upper SD"),
                      guide = guide_legend())
 
 # 失业率QQ图
@@ -468,6 +468,7 @@ plot(enroll_model2)
 |模型p值|3.466e-07|
 
 ```{r}
+print(unemploy_model2$coefficients)
 par(mfrow=c(2,2))
 plot(unemploy_model2)
 ```
