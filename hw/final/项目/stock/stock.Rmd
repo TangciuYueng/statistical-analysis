@@ -1,0 +1,617 @@
+---
+title: "HW2_R"
+author: "GrantHe"
+ID: "2154177"
+date: "2023-11-12"
+documentclass: ctexart
+output:
+  rticles::ctex:
+    fig_caption: yes
+geometry:
+- tmargin=1cm
+- bmargin=1cm
+- lmargin=1cm
+- rmargin=1cm
+---
+
+```{r}
+# 当前工作项目，方便检查位置
+getwd()
+```
+```{r}
+#install.packages("reshape2")
+```
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(reshape2)
+library(stats)
+library(tidyr)
+library(forecast)
+library(tseries)
+
+```
+
+导入数据集,这里的数据是原始数据
+```{r}
+# 导入数据集
+data <- read.csv("./stock.csv")
+
+# 将日期列中的-替换为/
+data$Date <- gsub("-", "/", data$Date)
+
+# 转换Date列为日期格式
+data$Date <- as.Date(data$Date, format = "%m/%d/%Y")
+
+# 查看数据集的结构和前几行数据
+str(data)
+head(data)
+data <- data[nrow(data):1, ]
+```
+```{r}
+unique_companies = unique(data$Company)
+print(unique_companies)
+```
+
+
+
+```{r 数据预处理}
+# 移除$符号并将 股价 列转换为数值型
+data$Close.Last <- as.numeric(gsub("\\$", "", data$Close.Last))
+data$Open <- as.numeric(gsub("\\$", "", data$Open))
+data$High <- as.numeric(gsub("\\$", "", data$High))
+data$Low <- as.numeric(gsub("\\$", "", data$Low))
+
+# 热图：重构造数据为年-月格式
+data$Year <- format(data$Date, "%Y")
+data$Month <- format(data$Date, "%m")
+
+```
+
+
+```{r}
+# 公司列表
+companies <- c("AAPL", "SBUX", "MSFT", "CSCO", "QCOM", "META", "AMZN", "TSLA", "AMD", "NFLX")
+
+# 遍历每个公司，绘制散点图
+for (company in companies) {
+  # 筛选特定公司的数据
+  company_data <- data[data$Company == company, ]
+
+  # 使用ggplot2绘制散点图
+  p <- ggplot(company_data, aes(x = Date, y = Close.Last)) +
+    geom_point(alpha = 0.5) +
+    scale_y_continuous(breaks = scales::pretty_breaks(n = 30)) +
+    theme_minimal() +
+    labs(title = paste(company, "Stock Price Scatter Plot"), 
+         x = "Date", 
+         y = "Close Last")
+
+  # 打印散点图
+  print(p)
+}
+
+```
+```{r}
+# 加载所需的包
+library(ggplot2)
+
+# 公司列表
+companies <- c("AAPL", "SBUX", "MSFT", "CSCO", "QCOM", "META", "AMZN", "TSLA", "AMD", "NFLX")
+
+# 遍历每个公司，绘制散点图
+for (company in companies) {
+  # 筛选特定公司的数据
+  company_data <- data[data$Company == company, ]
+
+  # 使用ggplot2绘制Volume与Close.Last之间的散点图
+  p <- ggplot(company_data, aes(x = Volume, y = Close.Last)) +
+    geom_point(alpha = 0.5) +
+    theme_minimal() +
+    labs(title = paste(company, "Volume vs. Close Last Scatter Plot"), 
+         x = "Volume", 
+         y = "Close Last")
+
+  # 打印散点图
+  print(p)
+}
+
+```
+```{r}
+p <- ggplot(data, aes(x = Volume, y = Close.Last, color = Company)) +
+  geom_point(alpha = 0.5) +
+  theme_minimal() +
+  labs(title = "Volume vs. Close Last Across Companies", 
+       x = "Volume", 
+       y = "Close Last")
+
+# 打印散点图
+print(p)
+```
+
+
+```{r}
+data$Company <- as.factor(data$Company)
+
+# 使用ggplot2绘制分面图
+ggplot(data, aes(x = Date, y = Close.Last, group = Company, color = Company)) +
+  geom_line() +
+  labs(title = "Stock Prices of Different Companies Over Time",
+       x = "Date",
+       y = "Close Last Price") +
+  # scale_color_viridis_d() +
+  facet_wrap(~ Company, scales = "free_y")+
+  scale_y_continuous(limits = c(0, 600))+
+  theme_minimal() +
+  theme(
+     axis.text.x = element_text(angle = 45, vjust = 0.5), # 将标签旋转90度
+     strip.text.x = element_text(size = 8),               # 减小facet标签的文本大小
+     panel.spacing = unit(2, "lines")                      # 增加折线图之间的间距
+   ) 
+
+```
+```{r}
+# 函数：计算历史波动率
+calculate_historical_volatility <- function(company_data) {
+  # 计算日收益率
+  returns <- diff(log(company_data$Close.Last)) * 100
+  
+  # 计算日收益率的标准差
+  sd_returns <- sd(returns, na.rm = TRUE)
+  
+  # 年化波动率（以交易日为252天）
+  annualized_volatility <- sd_returns * sqrt(252)
+  
+  return(annualized_volatility)
+}
+
+```
+
+```{r}
+# 公司列表
+companies <- c("AAPL", "SBUX", "MSFT", "CSCO", "QCOM", "META", "AMZN", "TSLA", "AMD", "NFLX")
+# 数据框：存储公司和其波动率
+volatility_data <- data.frame(Company = character(), Volatility = numeric())
+
+# 遍历每个公司，计算波动率
+for (company in companies) {
+  # 筛选特定公司的数据
+  company_data <- data[data$Company == company, ]
+  
+  # 计算波动率
+  company_volatility <- calculate_historical_volatility(company_data)
+  
+  # 添加到数据框
+  volatility_data <- rbind(volatility_data, data.frame(Company = company, Volatility = company_volatility))
+}
+
+# 绘制柱状图
+ggplot(volatility_data, aes(x = Company, y = Volatility, fill = Company)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  labs(title = "Historical Volatility of Companies", y = "Annualized Volatility (%)", x = "")
+```
+
+
+```{r}
+# 公司列表
+companies <- c("AAPL", "SBUX", "MSFT", "CSCO", "QCOM", "META", "AMZN", "TSLA", "AMD", "NFLX")
+
+# 遍历每个公司，计算月平均值并绘制热图
+for (company in companies) {
+  # 筛选特定公司的数据
+  company_data <- data[data$Company == company, ]
+
+  # 计算每月平均股价
+  monthly_avg <- aggregate(Close.Last ~ Year + Month, company_data, mean)
+
+  # 转换数据格式
+  heatmap_data <- dcast(monthly_avg, Year ~ Month, value.var = "Close.Last")
+
+  # 绘制热图
+  p <- ggplot(melt(heatmap_data, id.vars = 'Year'), aes(x = variable, y = Year, fill = value)) +
+    geom_tile() +
+    scale_fill_gradient(low = "blue", high = "red") +
+    theme_minimal() +
+    labs(title = paste(company, "Monthly Average Stock Price Heatmap"), 
+         x = "Month", 
+         y = "Year")
+
+  # 打印热图
+  print(p)
+}
+```
+```{r}
+# 加载所需的包
+library(ggplot2)
+library(reshape2)
+
+companies <- c("AAPL", "SBUX", "MSFT", "CSCO", "QCOM", "META", "AMZN", "TSLA", "AMD", "NFLX")
+
+# 初始化一个空的数据框用于存储所有公司的数据
+all_companies_data <- data.frame()
+
+# 遍历每个公司
+for (company in companies) {
+  # 筛选特定公司的数据
+  company_data <- data[data$Company == company, ]
+  
+  # 将数据等分为10份
+  total_rows <- nrow(company_data)
+  group_size <- ceiling(total_rows / 10)
+  
+  # 创建一个分组因子
+  company_data$Group <- rep(1:10, each = group_size, length.out = total_rows)
+  
+  # 计算每组的平均股价
+  group_avg <- aggregate(Close.Last ~ Company + Group, company_data, mean)
+  
+  # 合并到总数据框
+  all_companies_data <- rbind(all_companies_data, group_avg)
+}
+
+# 重塑数据用于绘图
+melted_data <- melt(all_companies_data, id.vars = c('Company', 'Group'))
+
+# 绘制热图
+ggplot(melted_data, aes(x = Group, y = Company, fill = value)) +
+  geom_tile() +
+  scale_fill_gradient(low = "blue", high = "red") +
+  theme_minimal() +
+  labs(title = "Stock Price Heatmap Across Companies (10 Time Segments)", 
+       x = "Time Segment", 
+       y = "Company")
+
+```
+
+
+
+```{r}
+data_selected <- data %>%
+  select(Date, Company, Close.Last)
+
+# 使用spread函数将数据转换为宽格式
+data_wide <- data_selected %>%
+  spread(key = Company, value = Close.Last)
+
+# 查看转换后的数据
+head(data_wide)
+```
+```{r}
+# 计算相关系数矩阵
+cor_matrix <- cor(data_wide[, -1], use = "complete.obs")  # 假设第一列是日期
+
+# 查看相关系数矩阵
+print(cor_matrix)
+
+```
+
+```{r}
+# 将相关系数矩阵转换为长格式以用于绘图
+cor_data <- melt(cor_matrix)
+
+# 绘制热图
+ggplot(cor_data, aes(Var1, Var2, fill = value)) +
+  geom_tile(color = "white") +
+  scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
+                       midpoint = 0, limit = c(-1, 1), space = "Lab", 
+                       name="Correlation") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(x = '', y = '', title = 'Correlation Matrix Heatmap')
+```
+
+```{r时间序列的包}
+
+```
+
+```{r}
+companies <- c("AAPL", "SBUX", "MSFT", "CSCO", "QCOM", "META", "AMZN", "TSLA", "AMD", "NFLX")
+
+data_recent <- data[format(data$Date, "%Y") >= "2023", ]
+# 遍历每个公司，分别计算每个公司适合的模型参数
+for (company in companies) {
+  cat("Processing company:", company, "\n")
+
+  # 筛选特定公司的数据
+  company_data <- data_recent[data_recent$Company == company, ]
+  data_test <- Box.test(data$Close.Last, type = "Ljung-Box")
+  print(data_test)
+  
+  # 检查时间序列的平稳性
+  adf_test_result <- adf.test(company_data$Close.Last)
+  print(adf_test_result)
+
+  # 如果需要，进行差分
+  company_data_diff <- diff(company_data$Close.Last, differences = 1)
+  plot(company_data_diff, main = paste(company, "1st Differenced Time Series"), ylab = "Differenced Close Price")
+
+  datadiff_test <- Box.test(company_data_diff, type = "Ljung-Box")
+  print(datadiff_test)
+  
+  
+  adf_test_diff_result <- adf.test(company_data_diff)
+  print(adf_test_diff_result)
+
+  # 绘制差分后的序列的ACF图
+  Acf(company_data_diff, main = paste(company, "ACF Plot"))
+
+  # 绘制差分后的序列的PACF图
+  Pacf(company_data_diff, main = paste(company, "PACF Plot"))
+
+  # 使用auto.arima()自动选择模型
+  arima_model <- auto.arima(company_data$Close.Last)
+  print(summary(arima_model))
+
+  cat("--------------------结束-------------------------------\n")
+}
+```
+
+
+```{r}
+# 收集p-values的向量
+p_values <- numeric(length(companies))
+names(p_values) <- companies
+
+for (company in companies) {
+  # 筛选特定公司的数据
+  company_data <- data_recent[data_recent$Company == company, ]
+  arima_model <- auto.arima(company_data$Close.Last)
+
+  # 检验残差是否为白噪声
+  residuals_test <- Box.test(residuals(arima_model), type = "Ljung-Box")
+
+  # 收集p-value
+  p_values[company] <- residuals_test$p.value
+
+  # 打印公司名称和检验结果
+  cat("White Noise Test for", company, ":\n")
+  print(residuals_test)
+  cat("---------------------------------------------------\n")
+}
+
+# 转换为数据框
+p_values_df <- data.frame(Company = names(p_values), P_Value = p_values)
+
+ggplot(p_values_df, aes(x = Company, y = P_Value)) +
+  geom_bar(stat = "identity", fill = "blue") +
+  ggtitle("P-Values of White Noise Test for Companies") +
+  xlab("Company") +
+  ylab("P-Value") +
+  theme_minimal()
+
+```
+基本上都是大于0.05的，说明经过可能表明这些公司的模型残差中存在一些自相关性，但是差分的程度还是够的。不过后面可以进行细化修改。
+
+
+
+```{r}
+library(forecast)
+library(tseries)
+library(lubridate)
+library(ggplot2)
+
+# 函数：预测股价并绘制图形
+predict <- function(data_rencent, company_name, forecast_days) {
+   # 将数据转换为宽格式，使每个公司的股价都有自己的列
+  wide_data <- data_rencent %>%
+    select(Date, Company, `Close.Last`) %>%
+    spread(key = Company, value = `Close.Last`)
+  
+  # 如果有NA值，使用前一个非NA值填充
+  wide_data <- wide_data %>%
+    fill(everything(), .direction = "down")
+
+  # 股价时间序列作为响应变量
+  ts_rescompany <- ts(wide_data[[company_name]], start = c(year(min(wide_data$Date)), month(min(wide_data$Date))), frequency = 252)
+ 
+  # 移除响应变量所在的列，创建外生变量时间序列
+  ts_exog <- ts(select(wide_data,-Date, -all_of(company_name)), start = c(year(min(wide_data$Date)), month(min(wide_data$Date))), frequency = 252)
+  
+  # 分割时间序列为训练集和测试集
+  ts_rescompany_train <- ts_rescompany[1:(length(ts_rescompany) - forecast_days)]
+  ts_rescompany_test <- ts_rescompany[(length(ts_rescompany) - forecast_days + 1):length(ts_rescompany)]
+
+  ts_exog_train <- ts_exog[1:(nrow(ts_exog) - forecast_days), ]
+  ts_exog_test <- ts_exog[(nrow(ts_exog) - forecast_days + 1):nrow(ts_exog), , drop = FALSE]
+
+  
+  # 使用训练集拟合ARIMAX模型
+  fit <- auto.arima(ts_rescompany_train, xreg = ts_exog_train)
+  summary(fit)
+  
+  # 使用模型和测试集中的外生变量进行预测
+  forecasted_values <- forecast(fit, xreg = ts_exog_test)
+  
+  # 计算预测准确率
+  accuracy_metrics <- accuracy(forecasted_values, ts_rescompany_test)
+  print(accuracy_metrics)
+  # 计算MAPE并以百分比表示
+  mape <- accuracy_metrics['Test set', 'MAPE']
+  accuracy_percentage <- 100 - mape
+  cat("预测准确率（百分比）:", accuracy_percentage, "%\n")
+  
+  # 绘制预测结果
+  plot(forecasted_values)
+}
+
+# 循环：对每家公司进行预测
+for (company in companies) {
+  
+
+  # 执行预测并绘制图形
+  cat("Forecast for", company, ":\n")
+  predict(data_recent, company, forecast_days = 30)
+  cat("---------------------------------------------------\n")
+}
+
+```
+
+
+```{r}
+# 公司列表
+companies <- c("AAPL", "SBUX", "MSFT", "CSCO", "QCOM", "META", "AMZN", "TSLA", "AMD", "NFLX")
+
+```
+
+
+```{r}
+library(tseries)
+library(forecast)
+
+# 定义函数
+analyze_arima_parameters <- function(data_recent, company) {
+  # 筛选特定公司的数据
+  company_data <- data_recent[data_recent$Company == company, ]
+
+  # 原始数据的ACF和PACF图
+  Acf(company_data$Close.Last, main = paste(company, "Original ACF Plot"))
+  Pacf(company_data$Close.Last, main = paste(company, "Original PACF Plot"))
+
+  # 进行一次差分
+  company_data_diff1 <- diff(company_data$Close.Last, differences = 1)
+
+  # 绘制一次差分后的时间序列图
+  plot(company_data_diff1, main = paste(company, "1st Differenced Time Series"), ylab = "Differenced Close Price")
+
+  # 绘制一次差分后的序列的ACF和PACF图
+  Acf(company_data_diff1, main = paste(company, "1st Differenced ACF Plot"))
+  Pacf(company_data_diff1, main = paste(company, "1st Differenced PACF Plot"))
+
+  # 进行两次差分
+  company_data_diff2 <- diff(company_data$Close.Last, differences = 2)
+
+  # 绘制两次差分后的时间序列图
+  plot(company_data_diff2, main = paste(company, "2nd Differenced Time Series"), ylab = "Differenced Close Price")
+
+  # 绘制两次差分后的序列的ACF和PACF图
+  Acf(company_data_diff2, main = paste(company, "2nd Differenced ACF Plot"))
+  Pacf(company_data_diff2, main = paste(company, "2nd Differenced PACF Plot"))
+}
+
+```
+
+
+
+```{r 对股票的预测}
+library(forecast)
+library(ggplot2)
+
+# 定义函数
+analyze_stock_price_with_arima <- function(data_recent, company, d, q) {
+  for(i in 1:17){
+    company_data <- data_recent[data_recent$Company == company, ]
+    # 划分训练集和测试集
+    split_index <- round(nrow(company_data) * 0.9)
+    train_data <- company_data$Close.Last[1:split_index]
+    test_data <- company_data$Close.Last[(split_index+1):nrow(company_data)]
+    train_dates <- company_data$Date[1:split_index]
+    test_dates <- company_data$Date[(split_index+1):nrow(company_data)]
+
+    # 拟合ARIMA模型（仅使用训练集）
+    arima_model <- Arima(train_data, order = c(i, d, q))
+    print(paste(i, ":", arima_model$aic))
+
+    # 进行预测
+    forecast_length <- 30
+    forecast_result <- forecast(arima_model, h = forecast_length + length(test_data))
+
+    # 创建未来预测数据框（包括测试集）
+    future_dates <- seq(tail(company_data$Date, 1), by = "1 day", length.out = forecast_length + 1)[-1]
+    forecast_data <- data.frame(Date = future_dates, Close.Last = tail(forecast_result$mean, forecast_length), Type = "Future Forecast")
+
+    # 创建测试集拟合数据框（仅使用测试集数据的拟合值）
+    fitted_test_data <- data.frame(Date = test_dates, Close.Last = head(forecast_result$mean, length(test_data)), Type = "Test Forecast")
+
+    # 将所有数据合并
+    combined_data <- rbind(
+      data.frame(Date = company_data$Date, Close.Last = company_data$Close.Last, Type = "Actual"),
+      data.frame(Date = train_dates, Close.Last = fitted(arima_model), Type = "Train Fitted"),
+      fitted_test_data,
+      forecast_data
+    )
+
+    # 使用ggplot2绘制图表
+    p <- ggplot(combined_data, aes(x = Date, y = Close.Last, color = Type)) +
+      geom_line() +
+      scale_color_manual(values = c("Actual" = "red", "Train Fitted" = "green", "Test Forecast" = "orange", "Future Forecast" = "blue")) +
+      theme_minimal() +
+      labs(title = paste("Stock Price Analysis - ARIMA(", i, ",", d, ",", q, ")"), x = "Date", y = "Close Last")
+
+    # 打印图表
+    print(p)
+    
+    # print(tail(forecast_data$Close.Last, 1))
+    # print(head(forecast_data$Close.Last, 1))
+
+    # 计算并打印最后一天与第一天的预测值差
+    price_change <- forecast_data$Close.Last[nrow(forecast_data)] - forecast_data$Close.Last[1]
+    # print(price_change)
+    print(paste("Expected price change over the forecast period for ARIMA(", i, ",", d, ",", q, "): ", price_change))
+  }
+}
+
+
+```
+
+
+
+```{r}
+#companies <- c("AAPL", "SBUX", "MSFT", "CSCO", "QCOM", "META", "AMZN", "TSLA", "AMD", "NFLX")
+#analyze_arima_parameters(data_recent, "AAPL")
+#analyze_arima_parameters(data_recent, "SBUX")
+#analyze_arima_parameters(data_recent, "MSFT")
+#analyze_arima_parameters(data_recent, "CSCO")
+#analyze_arima_parameters(data_recent, "QCOM")
+#analyze_arima_parameters(data_recent, "META")
+#analyze_arima_parameters(data_recent, "AMZN")
+#analyze_arima_parameters(data_recent, "TSLA")
+analyze_arima_parameters(data_recent, "AMD")
+#analyze_arima_parameters(data_recent, "NFLX")
+
+```
+
+```{r}
+#analyze_stock_price_with_arima(data_recent,"AAPL",1,5)
+#analyze_stock_price_with_arima(data_recent, "SBUX",1,5)
+#analyze_stock_price_with_arima(data_recent, "MSFT",1,8)
+#analyze_stock_price_with_arima(data_recent, "CSCO")
+#analyze_stock_price_with_arima(data_recent, "QCOM")
+#analyze_stock_price_with_arima(data_recent, "META")
+#analyze_stock_price_with_arima(data_recent, "AMZN")
+#analyze_stock_price_with_arima(data_recent, "TSLA")
+analyze_stock_price_with_arima(data_recent, "TSLA",2,10)
+#analyze_stock_price_with_arima(data_recent, "NFLX")
+```
+
+
+
+
+
+
+
+
+```{r}
+# 定义公司和价格变化的向量
+companies <- c("AAPL", "SBUX", "MSFT", "CSCO", "QCOM", "META", "AMZN", "TSLA", "AMD", "NFLX")
+price <- c(0.43456956529252, -4.57598478143822, 0.5762979080219, 0.2026532129534, 0.157227107759297,
+           36.4921669116322, 0.492744512510058, -2.50954387441897, 32.770980915039, 2.74777082194225)
+
+# 创建一个数据框
+price_data <- data.frame(companies, price)
+
+# 绘制条形图
+ggplot(price_data, aes(x = companies, y = price, fill = price > 0)) +
+    geom_bar(stat = "identity") +
+    scale_fill_manual(values = c("red", "green")) +
+    theme_minimal() +
+    labs(title = "Company Price Changes", x = "Company", y = "Price Change")
+```
+
+
+
+
+
+
+
